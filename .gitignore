@@ -16,6 +16,7 @@
 .DS_store
 \#*\#
 
+output
 vc2017/.vs
 vc2017/*.user
 vc2017/Debug

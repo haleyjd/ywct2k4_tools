@@ -40,6 +40,8 @@
     <ClCompile Include="..\..\elib\win32\win32_platform.cpp" />
     <ClCompile Include="..\..\elib\win32\win32_util.cpp" />
     <ClCompile Include="..\..\src\cardlister\cardlister.cpp" />
+    <ClCompile Include="..\..\src\common\cardnames.cpp" />
+    <ClCompile Include="..\..\src\common\numcards.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\elib\elib\atexit.h" />
@@ -72,7 +74,9 @@
     <ClInclude Include="..\..\elib\win32\win32_platform.h" />
     <ClInclude Include="..\..\elib\win32\win32_util.h" />
     <ClInclude Include="..\..\src\cardlister\econfig.h" />
+    <ClInclude Include="..\..\src\common\cardnames.h" />
     <ClInclude Include="..\..\src\common\instructions.h" />
+    <ClInclude Include="..\..\src\common\numcards.h" />
     <ClInclude Include="..\..\src\common\romoffsets.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
