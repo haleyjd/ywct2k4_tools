@@ -21,6 +21,7 @@
 #include "elib/qstring.h"
 #include "hal/hal_init.h"
 #include "../common/cardnames.h"
+#include "../common/carddata.h"
 
 static bool s_waitForInput = false;
 
@@ -53,6 +54,124 @@ static void DumpCardNames(FILE *romfile)
     else
     {
         std::printf("Failed to read in card names from ROM\n");
+    }
+}
+
+//
+// Interactive mode
+//
+static void InteractiveMode(FILE *romfile)
+{
+    using namespace WCTConstants;
+
+    WCTCardNames cardnames;
+    if(cardnames.ReadCardNames(romfile) == false)
+    {
+        std::printf("Failed to read in card names from ROM\n");
+        return; // oink.
+    }
+    
+    WCTCardData carddata;
+    if(carddata.ReadCardData(romfile) == false)
+    {
+        std::printf("Failed to read in card data from ROM\n");
+        return; // bahh.
+    }
+
+    // Output data
+    const uint32_t numcards = cardnames.GetNumCards();
+
+    qstring input;
+    bool    exitflag = false;
+    while(exitflag == false)
+    {
+        std::printf(
+            "\nYWCT2K4 Card Lister - %u cards loaded\n"
+            "--------------------------------------------------\n"
+            "Input a card number to view that card.\n"
+            "Input 'q' to exit.\n"
+            "Input 'n' followed by term to search by name.\n",
+            numcards - 1
+        );
+
+        std::fflush(stdout);
+        input.clear();
+
+        char inp[64];
+        if(const char *const inl = gets_s(inp, sizeof(inp)); inl != nullptr)
+        {
+            input = inl;
+        }
+
+        input.toLower();
+        if(input.startsWith('q') == true)
+        {
+            exitflag = true;
+        }
+        else if(input.startsWith('n') == true)
+        {
+            // Search by name
+            if(const size_t pos = input.findFirstOf(' '); pos != qstring::npos)
+            {
+                const char *const searchterm = input.bufferAt(pos) + 1;
+                for(uint32_t i = 1; i < numcards; i++)
+                {
+                    const qstring &name = cardnames.GetName(Languages::ENGLISH, i);
+                    if(name.containsNoCase(searchterm) == true)
+                    {
+                        std::printf("\n%04u: %s", i, name.c_str());
+                    }
+                }
+                std::puts("\n");
+            }
+        }
+        else
+        {
+            // Show card info
+            const uint32_t cardnum = uint32_t(input.toInt());
+            if(cardnum >= 1 && cardnum < numcards)
+            {
+                const qstring &name = cardnames.GetName(Languages::ENGLISH, cardnum);
+                std::printf("\n%04u: %s\n", cardnum, name.c_str());
+
+                const uint32_t cd = carddata.DataForCardNum(cardnum);
+                const CardType ct = GetCardType(cd);
+                if(ct == CardType::Spell || ct == CardType::Trap)
+                {
+                    const SpellTrapType stt = GetSpellTrapType(cd);
+                    std::printf(
+                        "%s %s\n\n",
+                        SafeSpellTrapTypeName(stt),
+                        ct == CardType::Spell ? "Spell Card" : "Trap Card"
+                    );
+                }
+                else
+                {
+                    const uint32_t        level  = GetCardLevel(cd);
+                    const Attribute       attrib = GetCardAttribute(cd);
+                    const MonsterCardType mtype  = GetMonsterType(cd);
+                    const uint32_t        atk    = GetMonsterATK(cd);
+                    const uint32_t        def    = GetMonsterDEF(cd);
+
+                    std::printf(
+                        "%s Monster Card\n"
+                        "Level %u\n"
+                        "Type: %s\n"
+                        "Attribute: %s\n"
+                        "ATK %u/DEF %u\n\n",
+                        SafeMonsterCardTypeName(mtype),
+                        level, 
+                        SafeCardTypeName(ct), 
+                        SafeAttributeName(attrib),
+                        atk, def
+                    );
+                }
+            }
+            else
+            {
+                std::printf("%u is not a valid card number (1 to %u), try again.\n", cardnum, numcards - 1);
+            }
+        }
     }
 }
 
@@ -96,6 +215,11 @@ void cardlister_main()
     {
         // dump names only
         DumpCardNames(romfile);
+    }
+    else
+    {
+        // interactive mode
+        InteractiveMode(romfile);
     }
 }
 

@@ -29,7 +29,7 @@ public:
     // Read in the card names from the ROM file
     bool ReadCardNames(FILE *f);
 
-    const uint32_t     GetNumCards() const { return m_numcards; }
+    uint32_t           GetNumCards() const { return m_numcards; }
     const cardnames_t &GetNames()    const { return m_names;    }
 
     const qstring &GetName(WCTConstants::Languages language, size_t cardnum) const

@@ -25,3 +25,4 @@ vc2017/x64
 vc2017/cardlister/Debug
 vc2017/cardlister/Release
 vc2017/cardlister/x64
+vc2017/cardlister/*.txt

@@ -39,7 +39,7 @@ bool WCTCardNames::ReadCardNames(FILE *f)
     if(m_numcards == 0)
         return false;
 
-    // Seek to start of OFFS_CARDNAMES
+    // Seek to start of card names
     if(std::fseek(f, long(WCTConstants::OFFS_CARDNAMES), SEEK_SET) != 0)
         return false;
 

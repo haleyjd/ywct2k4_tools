@@ -96,6 +96,12 @@
     <ClCompile Include="..\..\src\common\numcards.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\common\carddata.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\cardtypes.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\cardlister\econfig.h">
@@ -198,6 +204,12 @@
       <Filter>Source Files\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\common\numcards.h">
+      <Filter>Source Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\cardtypes.h">
+      <Filter>Source Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\carddata.h">
       <Filter>Source Files\common</Filter>
     </ClInclude>
   </ItemGroup>

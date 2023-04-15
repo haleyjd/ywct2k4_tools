@@ -52,6 +52,12 @@ namespace WCTConstants
     // manually.
     static constexpr uint32_t OFFS_CARDNAMES = 0x56E018u;
 
+    // Card data is DEF_ALLCARD_NUM 32-bit DWORDs that have most of the information
+    // about the game's cards packed into them, with some notable exceptions
+    // (things like spirit, toon, and union monsters are just sloppily hard-coded!)
+    static constexpr uint32_t OFFS_CARDDATA = 0x663A00u;
+    static constexpr uint32_t CARDDATA_SIZE = 4;
+
     // g_OppDecks - opponent deck lists - see oppdeck_t structure.
     static constexpr uint32_t NUMOPPDECKS            = 29;
     static constexpr uint32_t OFFS_OPPDECKS          = 0xC483ECu;
