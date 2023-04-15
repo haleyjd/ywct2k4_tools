@@ -102,6 +102,9 @@
     <ClCompile Include="..\..\src\common\cardtypes.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\common\romfile.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\cardlister\econfig.h">
@@ -210,6 +213,9 @@
       <Filter>Source Files\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\common\carddata.h">
+      <Filter>Source Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\romfile.h">
       <Filter>Source Files\common</Filter>
     </ClInclude>
   </ItemGroup>

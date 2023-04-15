@@ -22,6 +22,7 @@
 #include "hal/hal_init.h"
 #include "../common/cardnames.h"
 #include "../common/carddata.h"
+#include "../common/romfile.h"
 
 static bool s_waitForInput = false;
 
@@ -63,6 +64,14 @@ static void DumpCardNames(FILE *romfile)
 static void InteractiveMode(FILE *romfile)
 {
     using namespace WCTConstants;
+
+    if(WCTROMFile::VerifyROM(romfile) == false)
+    {
+        std::puts("File does not look like a YWCT2K4 ROM, continue anyway? (Y/N)\n");
+        std::fflush(stdout);
+        if(const char c = std::getchar(); c == 'n' || c == 'N')
+            return; // moo.
+    }
 
     WCTCardNames cardnames;
     if(cardnames.ReadCardNames(romfile) == false)

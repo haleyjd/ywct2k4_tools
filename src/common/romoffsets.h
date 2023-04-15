@@ -24,6 +24,14 @@ namespace WCTConstants
     // added in already, and any such values written will need it added in.
     static constexpr uint32_t GBA_ROM_BASEADDR = 0x8000000u;
 
+    // Header
+    static constexpr int32_t  HEADER_ENTRYPT     = 0x2E;
+    static constexpr uint32_t HEADER_GAMEID_OFFS = 0xA0u;
+    static constexpr uint32_t HEADER_GAMEID_LEN  = 12u;
+    
+    // ROM size
+    static constexpr long     EXPECTED_ROM_SIZE  = 16777216;
+
     // Languages, in the order the game stores data for them internally
     enum class Languages
     {

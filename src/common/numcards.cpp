@@ -17,6 +17,7 @@
 
 #include "elib/elib.h"
 #include "numcards.h"
+#include "romfile.h"
 #include "romoffsets.h"
 
 //
@@ -27,13 +28,8 @@ uint32_t WCTUtils::GetNumCards(FILE *f)
     if(f == nullptr)
         return 0;
 
-    if(std::fseek(f, long(WCTConstants::OFFS_DEF_ALLCARD_NUM), SEEK_SET) != 0)
-        return 0;
-
     static_assert(WCTConstants::SIZE_DEF_ALLCARD_NUM == sizeof(uint32_t));
-    uint32_t res = 0;
-    std::fread(&res, size_t(WCTConstants::SIZE_DEF_ALLCARD_NUM), 1, f);
-    return res;
+    return WCTROMFile::GetDataFromOffset<uint32_t>(f, WCTConstants::OFFS_DEF_ALLCARD_NUM).value_or(0u);
 }
 
 // EOF

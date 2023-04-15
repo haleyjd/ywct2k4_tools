@@ -19,6 +19,7 @@
 #include "elib/misc.h"
 #include "carddata.h"
 #include "numcards.h"
+#include "romfile.h"
 #include "romoffsets.h"
 
 //
@@ -26,6 +27,8 @@
 //
 bool WCTCardData::ReadCardData(FILE *f)
 {
+    static_assert(WCTConstants::CARDDATA_SIZE == sizeof(uint32_t));
+
     if(f == nullptr)
         return false;
 
@@ -34,23 +37,11 @@ bool WCTCardData::ReadCardData(FILE *f)
     if(numcards == 0)
         return false;
 
-    // Seek to start of card data
-    if(std::fseek(f, long(WCTConstants::OFFS_CARDDATA), SEEK_SET) != 0)
-        return false;
-
     // resize array
     m_carddata.resize(numcards);
 
     // read in the card data values
-    for(uint32_t &cd : m_carddata)
-    {
-        static_assert(WCTConstants::CARDDATA_SIZE == sizeof(uint32_t));
-
-        if(std::fread(&cd, WCTConstants::CARDDATA_SIZE, 1, f) != 1)
-            return false; // should not hit EOF during this loop
-    }
-
-    return true;
+    return WCTROMFile::GetVectorFromOffset(f, WCTConstants::OFFS_CARDDATA, m_carddata);
 }
 
 // EOF

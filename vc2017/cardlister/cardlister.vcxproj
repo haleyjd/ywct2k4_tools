@@ -44,6 +44,7 @@
     <ClCompile Include="..\..\src\common\cardnames.cpp" />
     <ClCompile Include="..\..\src\common\cardtypes.cpp" />
     <ClCompile Include="..\..\src\common\numcards.cpp" />
+    <ClCompile Include="..\..\src\common\romfile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\elib\elib\atexit.h" />
@@ -81,6 +82,7 @@
     <ClInclude Include="..\..\src\common\cardtypes.h" />
     <ClInclude Include="..\..\src\common\instructions.h" />
     <ClInclude Include="..\..\src\common\numcards.h" />
+    <ClInclude Include="..\..\src\common\romfile.h" />
     <ClInclude Include="..\..\src\common\romoffsets.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

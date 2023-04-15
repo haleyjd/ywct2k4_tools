@@ -116,6 +116,6 @@ namespace WCTConstants
         return (umct < uint8_t(MonsterCardType::NUMMONCARDTYPES)) ? MonsterCardTypeNames[umct] : "";
     }
 
-}
+} // end namespace WCTConstants
 
 // EOF

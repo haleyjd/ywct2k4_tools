@@ -46,6 +46,7 @@ namespace WCTCode
         BGT_REL8,     // xx DC
         BLE_REL8,     // xx DD
         B_REL8,       // xx E0
+        B_REL24,      // xx xx xx EA
         DCB,          // xx
         DCW,          // xx xx
         DCD,          // xx xx xx xx
@@ -104,6 +105,26 @@ namespace WCTCode
         return (uint16_t(Opcode::SUBS) | (uint8_t(rd) & 7) | ((uint8_t(rs) << 3) & 7) | ((uint16_t(rn) << 6) & 7));
     }
 
+    // Verify contents of a dword look like an unconditional branch op
+    static inline constexpr bool isBranchRel24(uint32_t data)
+    {
+        return (data & 0xFF000000u) == 0xEA000000u;
+    }
+
+    // sign-extender for signed 24-bit immediates
+    struct ext24_t
+    {
+        signed int d : 24;
+    };
+
+    // Get offset from a 24-bit relative branch
+    static inline int32_t getBranchRel24Dest(uint32_t data)
+    {
+        ext24_t extender;
+        extender.d = (data & 0x00FFFFFFu);
+        return int32_t(extender.d);
+    }
+
     // Instruction sizes
     static constexpr uint8_t instructionSizes[uint32_t(Instruction::NUMINSTRUCTIONS)] =
     {
@@ -118,6 +139,7 @@ namespace WCTCode
         2, // BGT_REL8
         2, // BLE_REL8
         2, // B_REL8
+        4, // B_REL24
         1, // DCB
         2, // DCW
         4  // DCD
