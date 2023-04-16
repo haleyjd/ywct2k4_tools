@@ -53,8 +53,11 @@ bool WCTBoosterPack::ReadBoosterPack(FILE *f, uint32_t offset)
     if(f == nullptr)
         return false;
 
+    // this is allowed; it means the booster pack's contents are determined solely
+    // by its index, which is true of the last five packs - they give all of a certain
+    // class of cards at random.
     if(offset == 0)
-        return false;
+        return true;
 
     // adjust offset relative to file (value read-in is relative to GBA ROM base),
     // and add in the 48 pad bytes that are all zero in this game (suspect they

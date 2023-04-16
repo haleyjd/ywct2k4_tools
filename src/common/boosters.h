@@ -68,8 +68,8 @@ struct WCTBoosterRef
 class WCTBoosterRefs final
 {
 public:
-    using boosterrefs_t = std::array<WCTBoosterRef,  size_t(WCTConstants::NUMBOOSTERPACKS)>;
-    using boosters_t    = std::array<WCTBoosterPack, size_t(WCTConstants::NUMBOOSTERPACKS)>;
+    using boosterrefs_t = std::array<WCTBoosterRef,  WCTConstants::NUMBOOSTERPACKS>;
+    using boosters_t    = std::array<WCTBoosterPack, WCTConstants::NUMBOOSTERPACKS>;
 
     bool ReadBoosterRefs(FILE *f);
 
