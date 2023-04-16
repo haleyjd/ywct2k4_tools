@@ -18,7 +18,6 @@
 #pragma once
 
 #include <vector>
-#include "elib/qstring.h"
 #include "romoffsets.h"
 
 class WCTCardNames final

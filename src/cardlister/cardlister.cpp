@@ -235,7 +235,7 @@ void cardlister_main()
     }
     else
     {
-        std::printf("Need a WCT2004 ROM file\n");
+        std::puts("Need a WCT2004 ROM file\n");
         return; // bork
     }
 
