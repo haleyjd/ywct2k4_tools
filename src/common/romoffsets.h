@@ -55,10 +55,21 @@ namespace WCTConstants
     static constexpr uint32_t OFFS_CARDIDS = 0x99A64u;
     static constexpr uint32_t CARDID_SIZE  = 2;        // all card IDs are shorts
 
-    // Start of card names - the game uses a system of offsets to access 
-    // these but I've not been able to figure it out so I parse them out
-    // manually.
-    static constexpr uint32_t OFFS_CARDNAMES = 0x56E018u;
+    // Start and end of card names super-string
+    static constexpr uint32_t OFFS_CARDNAMES     = 0x56E00Cu;
+    static constexpr uint32_t OFFS_CARDNAMES_END = 0x58ACDCu;
+
+    // Card name offsets - array of 32-bit offsets into the card names super-string
+    static constexpr uint32_t OFFS_CARDNAME_OFFS = OFFS_CARDNAMES_END;
+    static constexpr uint32_t CARDNAME_OFFS_SIZE = 4;
+
+    // Start and end of card texts super-string
+    static constexpr uint32_t OFFS_CARDTEXTS     = 0x5917A4u;
+    static constexpr uint32_t OFFS_CARDTEXTS_END = 0x65CF38u;
+
+    // Card text offsets - array of 32-bit offsets into the card texts super-string
+    static constexpr uint32_t OFFS_CARDTEXTS_OFFS = OFFS_CARDTEXTS_END;
+    static constexpr uint32_t CARDTEXTS_OFFS_SIZE = 4;
 
     // Card data is DEF_ALLCARD_NUM 32-bit DWORDs that have most of the information
     // about the game's cards packed into them, with some notable exceptions

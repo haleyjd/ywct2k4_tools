@@ -19,18 +19,16 @@
 #include "elib/misc.h"
 #include "cardnames.h"
 #include "numcards.h"
-
-enum class namestate_e
-{
-    LOOKFORNUL,
-    SCANPASTNULS
-};
+#include "romfile.h"
 
 //
 // Read in the card names from the ROM file
 //
 bool WCTCardNames::ReadCardNames(FILE *f)
 {
+    static_assert(WCTConstants::CARDNAME_OFFS_SIZE == sizeof(uint32_t));
+    static_assert(WCTConstants::OFFS_CARDNAMES_END > WCTConstants::OFFS_CARDNAMES);
+
     if(f == nullptr)
         return false;
 
@@ -39,56 +37,32 @@ bool WCTCardNames::ReadCardNames(FILE *f)
     if(m_numcards == 0)
         return false;
 
-    // Seek to start of card names
-    if(std::fseek(f, long(WCTConstants::OFFS_CARDNAMES), SEEK_SET) != 0)
-        return false;
-
     // Full number of strings is NUMLANGUAGES * numcards
     const size_t numlangs = size_t(WCTConstants::Languages::NUMLANGUAGES);
     const size_t numstrs  = numlangs * m_numcards;
     if(numstrs <= numlangs)
         return false; // safety check
 
-    m_names.resize(numstrs);
+    // allocate super-string
+    const size_t fulltextlen = WCTConstants::OFFS_CARDNAMES_END - WCTConstants::OFFS_CARDNAMES;
+    m_upText.reset(new char [fulltextlen]);
 
-    namestate_e state = namestate_e::LOOKFORNUL;
-    size_t idx = numlangs; // first set is empty
-    while(1)
+    // read in the full string
+    if(WCTROMFile::GetArrayFromOffset(f, WCTConstants::OFFS_CARDNAMES, m_upText.get(), fulltextlen) == false)
+        return false;
+
+    // resize offsets array
+    m_offsets.resize(numstrs);
+       
+    // read in the offsets
+    if(WCTROMFile::GetVectorFromOffset(f, WCTConstants::OFFS_CARDNAME_OFFS, m_offsets) == false)
+        return false;
+
+    // validate offsets
+    for(uint32_t &offs : m_offsets)
     {
-        char c = '\0';
-        if(std::fread(&c, 1, 1, f) != 1)
-            return false; // should not hit EOF during this scan
-
-        bool bustloop = false;
-        switch(state)
-        {
-        case namestate_e::LOOKFORNUL:
-            if(c == '\0')
-            {
-                state = namestate_e::SCANPASTNULS;
-                ++idx; // next string
-                if(idx == m_names.size())
-                {
-                    bustloop = true;
-                    break; // finished
-                }
-            }
-            else
-            {
-                m_names[idx] += c;
-            }
-            break;
-        case namestate_e::SCANPASTNULS:
-            if(c != '\0')
-            {
-                state = namestate_e::LOOKFORNUL;
-                m_names[idx] += c;
-            }
-            break;
-        }
-
-        if(bustloop == true)
-            break; // done
+        if(offs > fulltextlen - 1)
+            offs = 0;
     }
 
     return true;

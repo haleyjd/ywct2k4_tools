@@ -48,8 +48,8 @@ static void DumpCardNames(FILE *romfile)
         const uint32_t numcards = cardnames.GetNumCards();
         for(uint32_t i = 0; i < numcards; i++)
         {
-            const qstring &name = cardnames.GetName(WCTConstants::Languages::ENGLISH, i);
-            std::printf("%04d: %s\n", i, name.c_str());
+            const char *const name = cardnames.GetName(WCTConstants::Languages::ENGLISH, i);
+            std::printf("%04d: %s\n", i, name);
         }
         MaybeWait();
     }
@@ -134,10 +134,10 @@ static void InteractiveMode(FILE *romfile)
                 const char *const searchterm = input.bufferAt(pos) + 1;
                 for(uint32_t i = 1; i < numcards; i++)
                 {
-                    const qstring &name = cardnames.GetName(Languages::ENGLISH, i);
-                    if(name.containsNoCase(searchterm) == true)
+                    const char *const name = cardnames.GetName(Languages::ENGLISH, i);
+                    if(M_StrCaseStr(name, searchterm) != nullptr)
                     {
-                        std::printf("\n%04u: %s", i, name.c_str());
+                        std::printf("\n%04u: %s", i, name);
                     }
                 }
                 std::puts("\n");
@@ -152,8 +152,8 @@ static void InteractiveMode(FILE *romfile)
                 const uint16_t hexnum = uint16_t(std::strtoul(arg, nullptr, 16));
                 if(const size_t num = cardids.CardNumForID(hexnum); num != 0 && num != WCTCardIDs::npos)
                 {
-                    const qstring &name = cardnames.GetName(Languages::ENGLISH, num);
-                    std::printf("\n%04u: %s\n", num, name.c_str());
+                    const char *const name = cardnames.GetName(Languages::ENGLISH, num);
+                    std::printf("\n%04u: %s\n", num, name);
                 }
             }
         }
@@ -163,9 +163,9 @@ static void InteractiveMode(FILE *romfile)
             const uint32_t cardnum = uint32_t(input.toInt());
             if(cardnum >= 1 && cardnum < numcards)
             {
-                const qstring &name = cardnames.GetName(Languages::ENGLISH, cardnum);
+                const char *const name = cardnames.GetName(Languages::ENGLISH, cardnum);
                 const WCTCardIDs::cardid_t id = cardids.IDForCardNum(cardnum);
-                std::printf("\n%04u: %s | ID 0x%04hX\n", cardnum, name.c_str(), id);
+                std::printf("\n%04u: %s | ID 0x%04hX\n", cardnum, name, id);
 
                 const uint32_t cd = carddata.DataForCardNum(cardnum);
                 const CardType ct = GetCardType(cd);

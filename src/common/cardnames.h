@@ -24,23 +24,24 @@
 class WCTCardNames final
 {
 public:
-    using cardnames_t = std::vector<qstring>;
+    using textstore_t = std::unique_ptr<char []>;
+    using offsets_t   = std::vector<uint32_t>;
 
     // Read in the card names from the ROM file
     bool ReadCardNames(FILE *f);
 
-    uint32_t           GetNumCards() const { return m_numcards; }
-    const cardnames_t &GetNames()    const { return m_names;    }
+    uint32_t GetNumCards() const { return m_numcards; }
 
-    const qstring &GetName(WCTConstants::Languages language, size_t cardnum) const
+    const char *GetName(WCTConstants::Languages language, size_t cardnum) const
     {
         const size_t idx = cardnum * size_t(WCTConstants::Languages::NUMLANGUAGES) + size_t(language);
-        return idx < m_names.size() ? m_names[idx] : qstring::emptystr;
+        return (idx < m_offsets.size()) ? m_upText.get() + m_offsets[idx] : "";
     }
 
 private:
     uint32_t    m_numcards = 0;
-    cardnames_t m_names;    
+    textstore_t m_upText;
+    offsets_t   m_offsets;
 };
 
 // EOF
