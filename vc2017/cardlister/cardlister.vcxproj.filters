@@ -108,6 +108,9 @@
     <ClCompile Include="..\..\src\common\cardids.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\common\boosters.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\cardlister\econfig.h">
@@ -222,6 +225,9 @@
       <Filter>Source Files\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\common\cardids.h">
+      <Filter>Source Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\boosters.h">
       <Filter>Source Files\common</Filter>
     </ClInclude>
   </ItemGroup>
