@@ -22,6 +22,7 @@
 #include "hal/hal_init.h"
 #include "../common/cardnames.h"
 #include "../common/carddata.h"
+#include "../common/cardids.h"
 #include "../common/romfile.h"
 
 static bool s_waitForInput = false;
@@ -87,6 +88,13 @@ static void InteractiveMode(FILE *romfile)
         return; // bahh.
     }
 
+    WCTCardIDs cardids;
+    if(cardids.ReadCardIDs(romfile) == false)
+    {
+        std::printf("Failed to read card IDs from ROM\n");
+        return; // whinny!
+    }
+
     // Output data
     const uint32_t numcards = cardnames.GetNumCards();
 
@@ -96,10 +104,11 @@ static void InteractiveMode(FILE *romfile)
     {
         std::printf(
             "\nYWCT2K4 Card Lister - %u cards loaded\n"
-            "--------------------------------------------------\n"
+            "---------------------------------------------------\n"
             "Input a card number to view that card.\n"
             "Input 'q' to exit.\n"
-            "Input 'n' followed by term to search by name.\n",
+            "Input 'n' followed by term to search by name.\n"
+            "Input 'i' followed by a hex number to search by ID.\n",
             numcards - 1
         );
 
@@ -134,6 +143,20 @@ static void InteractiveMode(FILE *romfile)
                 std::puts("\n");
             }
         }
+        else if(input.startsWith('i') == true)
+        {
+            // Search by id
+            if(const size_t pos = input.findFirstOf(' '); pos != qstring::npos)
+            {
+                const char *const arg = input.bufferAt(pos) + 1;
+                const uint16_t hexnum = uint16_t(std::strtoul(arg, nullptr, 16));
+                if(const size_t num = cardids.CardNumForID(hexnum); num != 0 && num != WCTCardIDs::npos)
+                {
+                    const qstring &name = cardnames.GetName(Languages::ENGLISH, num);
+                    std::printf("\n%04u: %s\n", num, name.c_str());
+                }
+            }
+        }
         else
         {
             // Show card info
@@ -141,7 +164,8 @@ static void InteractiveMode(FILE *romfile)
             if(cardnum >= 1 && cardnum < numcards)
             {
                 const qstring &name = cardnames.GetName(Languages::ENGLISH, cardnum);
-                std::printf("\n%04u: %s\n", cardnum, name.c_str());
+                const WCTCardIDs::cardid_t id = cardids.IDForCardNum(cardnum);
+                std::printf("\n%04u: %s | ID 0x%04hX\n", cardnum, name.c_str(), id);
 
                 const uint32_t cd = carddata.DataForCardNum(cardnum);
                 const CardType ct = GetCardType(cd);

@@ -41,6 +41,7 @@
     <ClCompile Include="..\..\elib\win32\win32_util.cpp" />
     <ClCompile Include="..\..\src\cardlister\cardlister.cpp" />
     <ClCompile Include="..\..\src\common\carddata.cpp" />
+    <ClCompile Include="..\..\src\common\cardids.cpp" />
     <ClCompile Include="..\..\src\common\cardnames.cpp" />
     <ClCompile Include="..\..\src\common\cardtypes.cpp" />
     <ClCompile Include="..\..\src\common\numcards.cpp" />
@@ -78,6 +79,7 @@
     <ClInclude Include="..\..\elib\win32\win32_util.h" />
     <ClInclude Include="..\..\src\cardlister\econfig.h" />
     <ClInclude Include="..\..\src\common\carddata.h" />
+    <ClInclude Include="..\..\src\common\cardids.h" />
     <ClInclude Include="..\..\src\common\cardnames.h" />
     <ClInclude Include="..\..\src\common\cardtypes.h" />
     <ClInclude Include="..\..\src\common\instructions.h" />
