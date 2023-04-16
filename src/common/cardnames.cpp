@@ -37,7 +37,7 @@ bool WCTCardNames::ReadCardNames(FILE *f)
     if(m_numcards == 0)
         return false;
 
-    // Full number of strings is NUMLANGUAGES * numcards
+    // Full number of strings is NUMLANGUAGES * numcards (6834 normally)
     const size_t numlangs = size_t(WCTConstants::Languages::NUMLANGUAGES);
     const size_t numstrs  = numlangs * m_numcards;
     if(numstrs <= numlangs)

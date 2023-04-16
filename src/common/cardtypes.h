@@ -96,10 +96,17 @@ namespace WCTConstants
         return (ustt < uint8_t(SpellTrapType::NUMSTTYPES)) ? SpellTrapTypeNames[ustt] : "";
     }
 
-    // This value is found inside monster cards only. It is not always correct 
-    // and the game contains a load of hardcoded crap that compensates for the
-    // fact. Note that Spirit, Toon, and Union don't even exist here - each has
-    // its own routine that checks for every single card ID in that class...
+    // This value is found inside monster cards only. It is incomplete due to
+    // only having 4 bits available in the card data DWORDs - the game contains
+    // a load of hardcoded crap that compensates for the fact, some of which is
+    // erroneous (for example, Reaper on the Nightmare is not labeled as a 
+    // Fusion/Effect monster properly because the string-building routine does
+    // not check for its card ID at all). Note that Spirit, Toon, and Union don't
+    // even exist here - each has its own routine that checks for every single 
+    // card ID in that class. In fact there aren't Union monsters in this game, yet
+    // it has a routine to check for them, which I think may be shared with the
+    // DS game Nightmare Troubadour - this game is checking for a LOT of card IDs
+    // that it does not actually implement, but which ARE present in that game.
     enum class MonsterCardType : uint8_t
     {
         Normal,
