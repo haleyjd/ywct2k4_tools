@@ -4,6 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28307.1585
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cardlister", "cardlister\cardlister.vcxproj", "{98268075-0BD4-41CC-8CCF-E722E814AEBC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B001BACB-FF1E-4793-8F68-8FC5E34FFE36} = {B001BACB-FF1E-4793-8F68-8FC5E34FFE36}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jsoncpp", "jsoncpp\jsoncpp.vcxproj", "{B001BACB-FF1E-4793-8F68-8FC5E34FFE36}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +26,14 @@ Global
 		{98268075-0BD4-41CC-8CCF-E722E814AEBC}.Release|x64.Build.0 = Release|x64
 		{98268075-0BD4-41CC-8CCF-E722E814AEBC}.Release|x86.ActiveCfg = Release|Win32
 		{98268075-0BD4-41CC-8CCF-E722E814AEBC}.Release|x86.Build.0 = Release|Win32
+		{B001BACB-FF1E-4793-8F68-8FC5E34FFE36}.Debug|x64.ActiveCfg = Debug|x64
+		{B001BACB-FF1E-4793-8F68-8FC5E34FFE36}.Debug|x64.Build.0 = Debug|x64
+		{B001BACB-FF1E-4793-8F68-8FC5E34FFE36}.Debug|x86.ActiveCfg = Debug|Win32
+		{B001BACB-FF1E-4793-8F68-8FC5E34FFE36}.Debug|x86.Build.0 = Debug|Win32
+		{B001BACB-FF1E-4793-8F68-8FC5E34FFE36}.Release|x64.ActiveCfg = Release|x64
+		{B001BACB-FF1E-4793-8F68-8FC5E34FFE36}.Release|x64.Build.0 = Release|x64
+		{B001BACB-FF1E-4793-8F68-8FC5E34FFE36}.Release|x86.ActiveCfg = Release|Win32
+		{B001BACB-FF1E-4793-8F68-8FC5E34FFE36}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

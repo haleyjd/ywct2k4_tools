@@ -26,3 +26,7 @@ vc2017/cardlister/Debug
 vc2017/cardlister/Release
 vc2017/cardlister/x64
 vc2017/cardlister/*.txt
+vc2017/cardlister/*.json
+vc2017/jsoncpp/Debug
+vc2017/jsoncpp/Release
+vc2017/jsoncpp/x64

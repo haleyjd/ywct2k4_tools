@@ -24,6 +24,8 @@
 #include "../common/cardnames.h"
 #include "../common/carddata.h"
 #include "../common/cardids.h"
+#include "../common/iddb.h"
+#include "../common/oppdeck.h"
 #include "../common/romfile.h"
 
 static bool s_waitForInput = false;
@@ -60,14 +62,19 @@ static void DumpCardNames(FILE *romfile)
     }
 }
 
+//
+// Interactive mode: object holding data to pass between routines
+//
 class WCTInteractiveData final
 {
 public:
-    qstring        input;
-    WCTCardNames   cardnames;
-    WCTCardData    carddata;
-    WCTCardIDs     cardids;
-    WCTBoosterRefs boosterrefs;
+    qstring          input;
+    WCTCardNames     cardnames;
+    WCTCardData      carddata;
+    WCTCardIDs       cardids;
+    WCTBoosterRefs   boosterrefs;
+    WCTOpponentDecks decks;
+    WCTIDDatabase    db;
 };
 
 //
@@ -82,15 +89,39 @@ static void SearchByCardName(const WCTInteractiveData &data)
     {
         const char *const searchterm = &(data.input[pos]) + 1;
         const uint32_t numcards = data.cardnames.GetNumCards();
+        bool found = false;
         for(uint32_t i = 1; i < numcards; i++)
         {
             const char *const name = data.cardnames.GetName(Languages::ENGLISH, i);
             if(M_StrCaseStr(name, searchterm) != nullptr)
             {
                 std::printf("\n%04u: %s", i, name);
+                found = true;
             }
         }
-        std::puts("\n");
+        if(found == false)
+            std::puts("\nNo game results were found.");
+
+        // also check user database
+        const WCTIDDatabase::map_t &dbmap = data.db.GetMap();
+        bool firstdb = true;
+        for(const auto &pair : dbmap)
+        {
+            if(pair.second.containsNoCase(searchterm) == true)
+            {
+                if(firstdb == true)
+                {
+                    std::printf("\n%sResults from user database:", found ? "\n" : "");
+                    firstdb = false;
+                }
+                std::printf("\n%04hX (%hu): %s", pair.first, pair.first, pair.second.c_str());
+                found = true;
+            }
+        }
+        if(found == false)
+            std::puts("\nNo database results were found.");
+        else
+            std::puts(" ");
     }
 }
 
@@ -101,15 +132,65 @@ static void SearchByCardID(const WCTInteractiveData &data)
 {
     using namespace WCTConstants;
 
+    // Thumb codegen is awful with constants so this will help.
+    enum class idop_e
+    {
+        LOOKUP, // normal lookup
+        ADD,    // add to previous searched id
+        SUB     // subtract from previous searched id
+    };
+
+    static uint16_t lastid = 0;
+
     // Search by id
     if(const size_t pos = data.input.findFirstOf(' '); pos != qstring::npos)
     {
-        const char *const arg = &(data.input[pos]) + 1;
-        const uint16_t hexnum = uint16_t(std::strtoul(arg, nullptr, 16));
-        if(const size_t num = data.cardids.CardNumForID(hexnum); num != 0 && num != WCTCardIDs::npos)
+        const char *arg = &(data.input[pos]) + 1;
+        
+        idop_e op = idop_e::LOOKUP;
+        switch(*arg)
+        {
+        case '+':
+            op = idop_e::ADD;
+            ++arg;
+            break;
+        case '-':
+            op = idop_e::SUB;
+            ++arg;
+            break;
+        default:
+            break;
+        }
+        
+        uint16_t id = uint16_t(std::strtoul(arg, nullptr, 16));
+        switch(op)
+        {
+        case idop_e::ADD:
+            id = lastid + id;
+            break;
+        case idop_e::SUB:
+            id = lastid - id;
+            break;
+        default:
+            break;
+        }
+        lastid = id;
+
+        if(const size_t num = data.cardids.CardNumForID(id); num != 0 && num != WCTCardIDs::npos)
         {
             const char *const name = data.cardnames.GetName(Languages::ENGLISH, num);
-            std::printf("\n%04u: %s\n", num, name);
+            std::printf("\n%04hX: %04u %s (%hu)\n", id, num, name, id);
+        }
+        else
+        {
+            // check in the user database, which can store the IDs of cards that are supported in
+            // the game's code but NOT present in its data normally (there are a literal ton of
+            // these and I need help keeping track of them all).
+            const qstring &dbname = data.db.GetNameForID(id);
+            if(dbname.empty() == false)
+                std::printf("\n%04hX (%hu) has been defined by the user as \"%s\"\n", id, id, dbname.c_str());
+            else
+                std::printf("\n%04hX not found; look up %hu on YP\n", id, id);
         }
     }
 }
@@ -128,7 +209,7 @@ static void ShowCardInfo(const WCTInteractiveData &data)
     {
         const char *const name = data.cardnames.GetName(Languages::ENGLISH, cardnum);
         const WCTCardIDs::cardid_t id = data.cardids.IDForCardNum(cardnum);
-        std::printf("\n%04u: %s | ID 0x%04hX\n", cardnum, name, id);
+        std::printf("\n%04u: %s | ID 0x%04hX (%hu)\n", cardnum, name, id, id);
     
         const uint32_t cd = data.carddata.DataForCardNum(cardnum);
         const CardType ct = GetCardType(cd);
@@ -169,7 +250,10 @@ static void ShowCardInfo(const WCTInteractiveData &data)
     }
 }
 
-static void ViewCardList(const WCTInteractiveData &data, const WCTBoosterPack::cardlist_t &list)
+//
+// Interactive mode: View a list of cards in a booster pack or deck
+//
+static void ViewCardList(const WCTInteractiveData &data, const std::vector<uint16_t> &list)
 {
     if(list.size() == 0)
     {
@@ -187,11 +271,14 @@ static void ViewCardList(const WCTInteractiveData &data, const WCTBoosterPack::c
         }
         else
         {
-            std::printf("0x%04hX: Invalid entry in pack list (%04u)\n", id, cardnum);
+            std::printf("0x%04hX: Invalid entry in card list (%04u)\n", id, cardnum);
         }
     }
 }
 
+//
+// Interactive mode: Execute the booster pack viewing menu
+//
 static void ViewPackMenu(const WCTInteractiveData &data, size_t idx)
 {
     const WCTBoosterRefs::boosterrefs_t &refs  = data.boosterrefs.GetRefs();
@@ -243,6 +330,9 @@ static void ViewPackMenu(const WCTInteractiveData &data, size_t idx)
     }
 }
 
+//
+// Interactive mode: interpret the view booster command for the main loop
+//
 static void ViewBooster(const WCTInteractiveData &data)
 {
     if(const size_t pos = data.input.findFirstOf(' '); pos != qstring::npos)
@@ -263,6 +353,134 @@ static void ViewBooster(const WCTInteractiveData &data)
 }
 
 //
+// Interactive mode: interpret the deck command for the main loop
+//
+static void ViewDeck(const WCTInteractiveData &data)
+{
+    if(const size_t pos = data.input.findFirstOf(' '); pos != qstring::npos)
+    {
+        const WCTOpponentDecks::rawdecks_t &rawdecks = data.decks.GetRawData();
+        const WCTOpponentDecks::decks_t    &decks    = data.decks.GetDecks();
+
+        const char *const arg = &(data.input[pos]) + 1;
+        const size_t decknum  = size_t(strtoull(arg, nullptr, 10));
+        const size_t numdecks = rawdecks.size();
+
+        if(decknum < numdecks)
+        {
+            const WCTOppDeckData  &rawdeck = rawdecks[decknum];
+            const WCTOpponentDeck &deck    = decks[decknum];
+
+            std::printf(
+                "\nOpponent Deck %zu - %hu cards | AI Flags: %04hX\n"
+                "---------------------------------------------------\n",
+                decknum, rawdeck.len, rawdeck.flags
+            );
+            ViewCardList(data, deck.GetDeckList());
+        }
+        else
+        {
+            std::printf("Bad deck number (0 to %zu), try again.\n", numdecks - 1);
+        }
+    }
+}
+
+//
+// Interactive mode: add a card ID to name mapping into the user database
+//
+static void AddIDToDatabase(WCTInteractiveData &data)
+{
+    if(data.db.HasError())
+    {
+        std::puts("\nFunction unavailable.\n");
+        return;
+    }
+
+    if(const size_t pos = data.input.findFirstOf(' '); pos != qstring::npos)
+    {
+        const char *const arg = &(data.input[pos]) + 1;
+        const uint16_t id = uint16_t(std::strtoul(arg, nullptr, 16));
+
+        // don't allow aliasing built-in IDs; there's no point
+        if(const size_t num = data.cardids.CardNumForID(id); num != WCTCardIDs::npos)
+        {
+            std::printf("\nThat card is already defined by the game as card #%zu.\n", num);
+            return;
+        }
+
+        // is there already an ID with that name?
+        const qstring &oldname = data.db.GetNameForID(id);
+        if(oldname.empty() == false)
+        {
+            std::printf("\n%04hX is mapped to \"%s\", continue anyway? (Y/N)\n", id, oldname.c_str());
+            std::fflush(stdout);
+            char resp[2];
+            if(const char *const inl = gets_s(resp, sizeof(resp)); inl != nullptr)
+            {
+                if(*inl == 'n' || *inl == 'N')
+                    return; // moo.
+            }
+        }
+
+        // Get card name
+        std::puts("\nEnter a card name: ");
+        std::fflush(stdout);
+
+        char inp[256]; // methinks it a reasonable limit
+        if(const char *const inl = gets_s(inp, sizeof(inp)); inl != nullptr)
+        {
+            if(std::strlen(inl) != 0)
+            {
+                data.db.SetMapping(id, inl);
+                data.db.SaveToFile("cardids.json");
+                std::printf("Defined %04hX (%hu) as \"%s\"\n", id, id, inl);
+            }
+            else
+                std::puts("Empty card names are not allowed, ignored.\n");
+        }
+    }
+}
+
+//
+// Interactive mode: remove a card ID to name mapping from the user database
+//
+static void RemoveDatabaseID(WCTInteractiveData &data)
+{
+    if(data.db.HasError())
+    {
+        std::puts("\nFunction unavailable.\n");
+        return;
+    }
+
+    if(const size_t pos = data.input.findFirstOf(' '); pos != qstring::npos)
+    {
+        const char *const arg = &(data.input[pos]) + 1;
+        const uint16_t id = uint16_t(std::strtoul(arg, nullptr, 16));
+
+        // is there a mapping for that?
+        const qstring &name = data.db.GetNameForID(id);
+        if(name.empty() == true)
+        {
+            std::printf("\nThere is no mapping for ID %04hX (%hu).\n", id, id);
+            return; // moo.
+        }
+
+        std::printf("\nAre you sure you want to remove the mapping for %04hX to \"%s\"? (Y/N)\n", id, name.c_str());
+        std::fflush(stdout);
+        char resp[2];
+        if(const char *const inl = gets_s(resp, sizeof(resp)); inl != nullptr)
+        {
+            if(*inl == 'n' || *inl == 'N')
+                return; // moo.
+        }
+
+        data.db.RemoveMapping(id);
+        data.db.SaveToFile("cardids.json");
+        std::printf("Removed definition of %04hX\n", id);
+    }
+}
+
+//
 // Interactive mode
 //
 static void InteractiveMode(FILE *romfile)
@@ -271,35 +489,51 @@ static void InteractiveMode(FILE *romfile)
 
     WCTInteractiveData data;
 
+    // init the ID database
+    if(data.db.LoadFromFile("cardids.json") == false)
+    {
+        std::printf("Warning: could not load cardid db:\n %s\n", data.db.GetErrors().c_str());
+    }
+
     if(WCTROMFile::VerifyROM(romfile) == false)
     {
         std::puts("File does not look like a YWCT2K4 ROM, continue anyway? (Y/N)\n");
         std::fflush(stdout);
-        if(const char c = std::getchar(); c == 'n' || c == 'N')
-            return; // moo.
+        char resp[2];
+        if(const char *const inl = gets_s(resp, sizeof(resp)); inl != nullptr)
+        {
+            if(*inl == 'n' || *inl == 'N')
+                return; // moo.
+        }
     }
 
     if(data.cardnames.ReadCardNames(romfile) == false)
     {
-        std::printf("Failed to read in card names from ROM\n");
+        std::puts("Failed to read in card names from ROM\n");
         return; // oink.
     }
     
     if(data.carddata.ReadCardData(romfile) == false)
     {
-        std::printf("Failed to read in card data from ROM\n");
+        std::puts("Failed to read in card data from ROM\n");
         return; // bahh.
     }
 
     if(data.cardids.ReadCardIDs(romfile) == false)
     {
-        std::printf("Failed to read card IDs from ROM\n");
+        std::puts("Failed to read card IDs from ROM\n");
         return; // whinny!
     }
 
     if(data.boosterrefs.ReadBoosterRefs(romfile) == false)
     {
-        std::printf("Failed to read booster packs from ROM\n");
+        std::puts("Failed to read booster packs from ROM\n");
+        return;
+    }
+
+    if(data.decks.ReadDecks(romfile) == false)
+    {
+        std::puts("Failed to read opponent decks from ROM\n");
         return;
     }
 
@@ -334,17 +568,26 @@ static void InteractiveMode(FILE *romfile)
             data.input.toLower();
             switch(data.input[0])
             {
-            case 'q':
+            case 'q': // quit
                 exitflag = true;
                 break;
-            case 'b':
+            case 'b': // booster
                 ViewBooster(data);
                 break;
-            case 'n':
+            case 'd': // deck
+                ViewDeck(data);
+                break;
+            case 'n': // search by name
                 SearchByCardName(data);
                 break;
-            case 'i':
+            case 'i': // search by id
                 SearchByCardID(data);
+                break;
+            case 'a': // add an id to the database
+                AddIDToDatabase(data);
+                break;
+            case 'r': // remove an id from the database
+                RemoveDatabaseID(data);
                 break;
             default:
                 ShowCardInfo(data);
