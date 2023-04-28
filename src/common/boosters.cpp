@@ -60,8 +60,10 @@ bool WCTBoosterPack::ReadBoosterPack(FILE *f, uint32_t offset)
         return true;
 
     // adjust offset relative to file (value read-in is relative to GBA ROM base),
-    // and add in the 48 pad bytes that are all zero in this game (suspect they
-    // played a role in some earlier title, such as DM5 Expert 1 / EDS)
+    // and add in the 48 pad bytes that are all zero in this game (they
+    // played a role in earlier title(s), such as DM5 Expert 1 / EDS, where 
+    // there are multiple rarity tiers - I suspect latent support might actually
+    // still exist for them here as well).
     const uint32_t fileoffs = (offset - WCTConstants::GBA_ROM_BASEADDR) + WCTConstants::BOOSTER_PAD_LEN;
 
     // seek to boosterpack struct start plus the pad bytes
