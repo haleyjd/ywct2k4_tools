@@ -85,6 +85,8 @@ namespace WCTConstants
     static constexpr uint32_t OPPDECK_DECKLIST_SIZE  = 4; // dword offset
     static constexpr uint32_t OPPDECK_LISTLEN_OFFS   = 4;
     static constexpr uint32_t OPPDECK_LISTLEN_SIZE   = 2; // short int
+    static constexpr uint32_t OPPDECK_FLAGS_OFFS     = 8;
+    static constexpr uint32_t OPPDECK_FLAGS_SIZE     = 2; // short int
 
     // g_BoosterPacks - references lists of cards contained in each booster
     // See boosterref_t structure.

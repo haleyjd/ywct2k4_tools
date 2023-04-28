@@ -97,7 +97,7 @@ namespace WCTConstants
     }
 
     // This value is found inside monster cards only. It is incomplete due to
-    // only having 4 bits available in the card data DWORDs - the game contains
+    // only having 2 bits available in the card data DWORDs - the game contains
     // a load of hardcoded crap that compensates for the fact, some of which is
     // erroneous (for example, Reaper on the Nightmare is not labeled as a 
     // Fusion/Effect monster properly because the string-building routine does
