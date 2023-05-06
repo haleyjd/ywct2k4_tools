@@ -78,8 +78,36 @@ namespace WCTConstants
     {
         return (data & MASK_DEFENSE) * 10;
     }
+
+    static constexpr uint32_t MASK_RITUAL_MONSTER = 0x00001FFFu; // 0000000000000000000xxxxxxxxxxxxx
+    static constexpr uint32_t MASK_RITUAL_SPELL   = 0x03FFE000u; // 000000xxxxxxxxxxxxx0000000000000
+    static constexpr uint32_t MASK_RITUAL_LEVELS  = 0xFC000000u; // xxxxxx00000000000000000000000000
+
+    static constexpr uint32_t SHIFT_RITUAL_SPELL  = 13u;
+    static constexpr uint32_t SHIFT_RITUAL_LEVELS = 26u;
+
+    // Extract target monster for ritual from ritual data value
+    static inline constexpr uint32_t GetRitualMonster(uint32_t ritualdata)
+    {
+        return (ritualdata & MASK_RITUAL_MONSTER);
+    }
+
+    // Extract required spell card for ritual from ritual data value
+    static inline constexpr uint32_t GetRitualSpell(uint32_t ritualdata)
+    {
+        return ((ritualdata & MASK_RITUAL_SPELL) >> SHIFT_RITUAL_SPELL);
+    }
+
+    // Extract required levels for ritual from ritual data value
+    static inline constexpr uint32_t GetRitualLevels(uint32_t ritualdata)
+    {
+        return ((ritualdata & MASK_RITUAL_LEVELS) >> SHIFT_RITUAL_LEVELS);
+    }
 }
 
+//
+// Stores packed information on the cards supported by the game.
+//
 class WCTCardData final
 {
 public:
@@ -97,6 +125,58 @@ public:
 
 private:
     carddata_t m_carddata;
+};
+
+//
+// Stores packed information on ritual summons supported by the game.
+//
+class WCTRitualData final
+{
+public:
+    using ritualdata_t = std::vector<uint32_t>;
+
+    // Read ritual data from the ROM file
+    bool ReadRitualData(FILE *f);
+
+    const ritualdata_t &GetData() const { return m_ritualdata; }
+
+private:
+    ritualdata_t m_ritualdata;
+};
+
+//
+// Stores information on supported fusion summons. Note that it isn't possible
+// to add new entries, because there's a huge function in the game that just ignores
+// these tables and reimplements all the same data using hardcoded comparisons.
+// Only certain aspects of fusion summons thus obey these tables and they're only 
+// useful for informative purposes as a result.
+// Absolutely repugnant coding practices going on in this game.
+//
+class WCTFusionData final
+{
+public:
+    using cardid_t = uint16_t;
+    struct fusionentry_t
+    {
+        cardid_t fusion_id    = 0;
+        cardid_t material1_id = 0;
+        cardid_t material2_id = 0;
+        cardid_t material3_id = 0;
+    };
+
+    using fusiontable_t = std::vector<fusionentry_t>;
+
+    // Read the fusion summon tables from the ROM
+    bool ReadFusionTables(FILE *f);
+
+    const fusiontable_t &GetFusion2Mats() const { return m_fusion2mats; }
+    const fusiontable_t &GetFusion3Mats() const { return m_fusion3mats; }
+
+private:
+    fusiontable_t m_fusion2mats;
+    fusiontable_t m_fusion3mats;
+
+    bool ReadFusionTable(FILE *f, uint32_t offset, fusiontable_t &table);
 };
 
 // EOF

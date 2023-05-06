@@ -44,4 +44,79 @@ bool WCTCardData::ReadCardData(FILE *f)
     return WCTROMFile::GetVectorFromOffset(f, WCTConstants::OFFS_CARDDATA, m_carddata);
 }
 
+//
+// Read ritual data from the ROM file
+//
+bool WCTRitualData::ReadRitualData(FILE *f)
+{
+    static_assert(WCTConstants::RITUALDATA_ENTRY_SIZE == sizeof(uint32_t));
+
+    if(f == nullptr)
+        return false;
+
+    // seek to offset
+    if(std::fseek(f, long(WCTConstants::OFFS_RITUALDATA), SEEK_SET) != 0)
+        return false;
+
+    // read DWORDs until one has a zero value (the table has 21 entries normally, but
+    // could potentially be relocated in the ROM to contain more)
+    while(1)
+    {
+        const uint32_t rd = WCTROMFile::GetData<uint32_t>(f).value_or(0u);
+        if(rd == 0)
+            break;  // terminated by zero entry
+        m_ritualdata.push_back(rd);
+    }
+
+    return true;
+}
+
+//
+// Read in a single table of fusion summon entries
+//
+bool WCTFusionData::ReadFusionTable(FILE *f, uint32_t offset, fusiontable_t &table)
+{
+    // seek to offset
+    if(std::fseek(f, long(offset), SEEK_SET) != 0)
+        return false;
+
+    while(1)
+    {
+        fusionentry_t ent;
+        ent.fusion_id = WCTROMFile::GetData<uint16_t>(f).value_or(0u);
+        
+        if(ent.fusion_id == 0)
+            break; // terminated by zero entry
+
+        ent.material1_id = WCTROMFile::GetData<uint16_t>(f).value_or(0u);
+        ent.material2_id = WCTROMFile::GetData<uint16_t>(f).value_or(0u);
+        ent.material3_id = WCTROMFile::GetData<uint16_t>(f).value_or(0u);
+
+        table.push_back(ent);
+    }
+
+    return true;
+}
+
+//
+// Read the fusion summon tables from the ROM
+//
+bool WCTFusionData::ReadFusionTables(FILE *f)
+{
+    static_assert(WCTConstants::CARDID_SIZE == sizeof(uint16_t));
+
+    if(f == nullptr)
+        return false;
+
+    // read in fusion 2-mats
+    if(ReadFusionTable(f, WCTConstants::OFFS_FUSIONS_2MAT, m_fusion2mats) == false)
+        return false;
+
+    // read in fusion 3-mats
+    if(ReadFusionTable(f, WCTConstants::OFFS_FUSIONS_3MAT, m_fusion3mats) == false)
+        return false;
+
+    return true;
+}
+
 // EOF

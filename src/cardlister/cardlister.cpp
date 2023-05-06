@@ -71,6 +71,8 @@ public:
     qstring          input;
     WCTCardNames     cardnames;
     WCTCardData      carddata;
+    WCTRitualData    ritualdata;
+    WCTFusionData    fusiondata;
     WCTCardIDs       cardids;
     WCTBoosterRefs   boosterrefs;
     WCTOpponentDecks decks;
@@ -480,6 +482,130 @@ static void RemoveDatabaseID(WCTInteractiveData &data)
     }
 }
 
+// Used to return info on a fusion or ritual card
+struct frcinfo_t
+{
+    qstring name;
+    size_t  num;  // may be npos
+};
+
+//
+// Look up info on a single fusion or ritual card entry
+//
+static frcinfo_t GetFusionRitualCardInfo(const WCTInteractiveData &data, uint16_t id)
+{
+    frcinfo_t ret;
+    ret.num = data.cardids.CardNumForID(id);
+    if(ret.num == WCTCardIDs::npos)
+    {
+        ret.num = 0;
+
+        // check user database
+        const qstring &name = data.db.GetNameForID(id);
+        if(name.empty() == false)
+        {
+            ret.name = "User-defined \"" + name + "\"";
+        }
+        else
+        {
+            ret.name = "Unknown";
+        }
+    }
+    else
+    {
+        ret.name = data.cardnames.GetName(WCTConstants::Languages::ENGLISH, ret.num);
+    }
+    return ret;
+}
+
+//
+// Interactive mode: View ritual summons data
+//
+static void ViewRitualSummons(const WCTInteractiveData &data)
+{
+    const WCTRitualData::ritualdata_t &rds = data.ritualdata.GetData();
+
+    std::printf(
+        "\nRitual Summons Data\n"
+        "---------------------------------------------------\n"
+    );
+
+    uint32_t entry = 0;
+    for(uint32_t rd : rds)
+    {
+        const uint32_t monsterid = WCTConstants::GetRitualMonster(rd);
+        const uint32_t spellid   = WCTConstants::GetRitualSpell(rd);
+        const uint32_t levels    = WCTConstants::GetRitualLevels(rd);
+
+        const frcinfo_t monInfo   = GetFusionRitualCardInfo(data, monsterid);
+        const frcinfo_t spellInfo = GetFusionRitualCardInfo(data, spellid);
+
+        std::printf(
+            "Ritual entry %u:\n"
+            "Monster: %04hX (%04hu): %04zu %s\n"
+            "Spell:   %04hX (%04hu): %04zu %s\n"
+            "Levels:  %u\n\n",
+            entry++,
+            monsterid, monsterid, monInfo.num,   monInfo.name.c_str(),
+            spellid,   spellid,   spellInfo.num, spellInfo.name.c_str(),
+            levels
+        );
+    }
+}
+
+//
+// Interactive mode: view fusion summons data
+//
+static void ViewFusionSummons(const WCTInteractiveData &data)
+{
+    const WCTFusionData::fusiontable_t &twomats   = data.fusiondata.GetFusion2Mats();
+    const WCTFusionData::fusiontable_t &threemats = data.fusiondata.GetFusion3Mats();
+
+    std::printf(
+        "\nFusion Summons Data\n"
+        "---------------------------------------------------\n"
+    );
+
+    uint32_t entry = 0;
+    for(const WCTFusionData::fusionentry_t &ent : twomats)
+    {
+        const frcinfo_t monInfo  = GetFusionRitualCardInfo(data, ent.fusion_id);
+        const frcinfo_t mat1Info = GetFusionRitualCardInfo(data, ent.material1_id);
+        const frcinfo_t mat2Info = GetFusionRitualCardInfo(data, ent.material2_id);
+
+        std::printf(
+            "2-Mat %02u  : %04hX (%04hu): %04zu %s\n"
+            "Material 1: %04hX (%04hu): %04zu %s\n"
+            "Material 2: %04hX (%04hu): %04zu %s\n\n",
+            entry++,
+            ent.fusion_id,    ent.fusion_id,    monInfo.num,  monInfo.name.c_str(),
+            ent.material1_id, ent.material1_id, mat1Info.num, mat1Info.name.c_str(),
+            ent.material2_id, ent.material2_id, mat2Info.num, mat2Info.name.c_str()
+        );
+    }
+
+    entry = 0;
+    for(const WCTFusionData::fusionentry_t &ent : threemats)
+    {
+        const frcinfo_t monInfo  = GetFusionRitualCardInfo(data, ent.fusion_id);
+        const frcinfo_t mat1Info = GetFusionRitualCardInfo(data, ent.material1_id);
+        const frcinfo_t mat2Info = GetFusionRitualCardInfo(data, ent.material2_id);
+        const frcinfo_t mat3Info = GetFusionRitualCardInfo(data, ent.material3_id);
+
+        std::printf(
+            "3-Mat %02u  : %04hX (%04hu): %04zu %s\n"
+            "Material 1: %04hX (%04hu): %04zu %s\n"
+            "Material 2: %04hX (%04hu): %04zu %s\n"
+            "Material 3: %04hX (%04hu): %04zu %s\n\n",
+            entry++,
+            ent.fusion_id,    ent.fusion_id,    monInfo.num,  monInfo.name.c_str(),
+            ent.material1_id, ent.material1_id, mat1Info.num, mat1Info.name.c_str(),
+            ent.material2_id, ent.material2_id, mat2Info.num, mat2Info.name.c_str(),
+            ent.material3_id, ent.material3_id, mat3Info.num, mat3Info.name.c_str()
+        );
+    }
+}
+
 //
 // Interactive mode
 //
@@ -537,6 +663,18 @@ static void InteractiveMode(FILE *romfile)
         return;
     }
 
+    if(data.fusiondata.ReadFusionTables(romfile) == false)
+    {
+        std::puts("Failed to read fusion summons data from ROM\n");
+        return;
+    }
+
+    if(data.ritualdata.ReadRitualData(romfile) == false)
+    {
+        std::puts("Failed to read ritual data from ROM\n");
+        return;
+    }
+
     // Output data
     const uint32_t numcards = data.cardnames.GetNumCards();
 
@@ -588,6 +726,12 @@ static void InteractiveMode(FILE *romfile)
                 break;
             case 'r': // remove an id from the database
                 RemoveDatabaseID(data);
+                break;
+            case 's': // view ritual 'S'ummons
+                ViewRitualSummons(data);
+                break;
+            case 'f': // view fusion summons
+                ViewFusionSummons(data);
                 break;
             default:
                 ShowCardInfo(data);

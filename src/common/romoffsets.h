@@ -77,6 +77,18 @@ namespace WCTConstants
     static constexpr uint32_t OFFS_CARDDATA = 0x663A00u;
     static constexpr uint32_t CARDDATA_SIZE = 4;
 
+    // Fusion data - divided into two arrays, one for two-material fusions and the
+    // other for three-material fusions. Terminated by entries of all zeroes. Each
+    // entry is just a structure (or array) of four card IDs.
+    static constexpr uint32_t OFFS_FUSIONS_2MAT = 0xC42EF0u;
+    static constexpr uint32_t OFFS_FUSIONS_3MAT = 0xC430C8u;
+
+    // Ritual data - there is a table of packed information on rituals which contains
+    // the monster card ID, spell card ID, and required levels. It is terminated with
+    // a zero entry.
+    static constexpr uint32_t OFFS_RITUALDATA       = 0xC430E8u;
+    static constexpr uint32_t RITUALDATA_ENTRY_SIZE = 4;
+
     // g_OppDecks - opponent deck lists - see oppdeck_t structure.
     static constexpr uint32_t NUMOPPDECKS            = 29;
     static constexpr uint32_t OFFS_OPPDECKS          = 0xC483ECu;
