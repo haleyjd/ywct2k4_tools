@@ -54,7 +54,8 @@ public:
 
     enum flags_e : uint16_t
     {
-        FLAG_EXODIA = 0x200u // is an Exodia player
+        FLAG_HARDER = 0x0001u, // OR'd in at runtime if opponent # > 10; affects junk floodfill algorithm
+        FLAG_EXODIA = 0x0200u  // is an Exodia player
     };
 
     // Read all opponent decks from the ROM file
