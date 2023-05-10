@@ -30,3 +30,12 @@ vc2017/cardlister/*.json
 vc2017/jsoncpp/Debug
 vc2017/jsoncpp/Release
 vc2017/jsoncpp/x64
+vc2017/cardgfxtool/Debug
+vc2017/cardgfxtool/Release
+vc2017/cardgfxtool/x64
+vc2017/libpng/Debug
+vc2017/libpng/Release
+vc2017/libpng/x64
+vc2017/zlib/Debug
+vc2017/zlib/Release
+vc2017/zlib/x64

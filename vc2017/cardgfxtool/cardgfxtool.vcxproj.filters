@@ -13,21 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\common">
+      <UniqueIdentifier>{eab868d7-fb40-4acf-9f1f-9eabef065474}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\elib">
-      <UniqueIdentifier>{7243acc1-8613-4c80-acc6-3859452ca9c9}</UniqueIdentifier>
+      <UniqueIdentifier>{eb21ddcd-69db-400d-ae9e-bd63e3832073}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\hal">
-      <UniqueIdentifier>{0b1af207-0ce6-439f-95d4-0721e468d7bb}</UniqueIdentifier>
+      <UniqueIdentifier>{61aecc7d-d0e3-4c3d-a7de-0e95e9b9a1df}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\win32">
-      <UniqueIdentifier>{8e6867ac-1040-4b8a-b04e-61c0cf596298}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\common">
-      <UniqueIdentifier>{4e58fb5e-bedb-433c-af81-e2f62872e94e}</UniqueIdentifier>
+      <UniqueIdentifier>{7593cbc4-f5bf-413e-9441-cab5b41f6132}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\cardlister\cardlister.cpp">
+    <ClCompile Include="..\..\src\cardgfxtool\cardgfxtool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\elib\elib\atexit.cpp">
@@ -90,37 +90,28 @@
     <ClCompile Include="..\..\elib\win32\win32_util.cpp">
       <Filter>Source Files\win32</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\common\cardnames.cpp">
-      <Filter>Source Files\common</Filter>
+    <ClCompile Include="..\..\src\cardgfxtool\cardpic.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\common\numcards.cpp">
-      <Filter>Source Files\common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\common\carddata.cpp">
-      <Filter>Source Files\common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\common\cardtypes.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\common\romfile.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\common\cardids.cpp">
-      <Filter>Source Files\common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\common\boosters.cpp">
-      <Filter>Source Files\common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\common\oppdeck.cpp">
-      <Filter>Source Files\common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\common\iddb.cpp">
-      <Filter>Source Files\common</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\cardlister\econfig.h">
+    <ClInclude Include="..\..\src\cardgfxtool\econfig.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\colors.h">
+      <Filter>Source Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\romfile.h">
+      <Filter>Source Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\romoffsets.h">
+      <Filter>Source Files\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\elib\elib\atexit.h">
       <Filter>Source Files\elib</Filter>
@@ -209,40 +200,10 @@
     <ClInclude Include="..\..\elib\win32\win32_util.h">
       <Filter>Source Files\win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\common\romoffsets.h">
-      <Filter>Source Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\common\instructions.h">
-      <Filter>Source Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\common\cardnames.h">
-      <Filter>Source Files\common</Filter>
+    <ClInclude Include="..\..\src\cardgfxtool\cardpic.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\common\numcards.h">
-      <Filter>Source Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\common\cardtypes.h">
-      <Filter>Source Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\common\carddata.h">
-      <Filter>Source Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\common\romfile.h">
-      <Filter>Source Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\common\cardids.h">
-      <Filter>Source Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\common\boosters.h">
-      <Filter>Source Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\common\oppdeck.h">
-      <Filter>Source Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\common\iddb.h">
-      <Filter>Source Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\common\colors.h">
       <Filter>Source Files\common</Filter>
     </ClInclude>
   </ItemGroup>
