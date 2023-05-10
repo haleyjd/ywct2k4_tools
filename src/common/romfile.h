@@ -18,6 +18,7 @@
 #pragma once
 
 #include <optional>
+#include <array>
 #include <vector>
 
 namespace WCTROMFile
@@ -85,6 +86,18 @@ namespace WCTROMFile
     inline bool GetVectorFromOffset(FILE *f, uint32_t offset, std::vector<T> &vec)
     {
         return GetArrayFromOffset<T>(f, offset, vec.data(), vec.size());
+    }
+
+    template<typename T, size_t S>
+    inline bool GetStdArray(FILE *f, std::array<T, S> &arr)
+    {
+        return GetArray<T>(f, arr.data(), S);
+    }
+
+    template<typename T, size_t S>
+    inline bool GetStdArrayFromOffset(FILE *f, uint32_t offset, std::array<T, S> &arr)
+    {
+        return GetArrayFromOffset<T>(f, offset, arr.data(), S);
     }
 
 } // end namespace WCTROMFile

@@ -55,6 +55,30 @@ namespace WCTConstants
     static constexpr uint32_t OFFS_CARDIDS = 0x99A64u;
     static constexpr uint32_t CARDID_SIZE  = 2;        // all card IDs are shorts
 
+    // Card graphic palettes
+    // 128 bytes each, 64 entries of 16-bit RGB555 colors. In same order as the cards by their number.
+    static constexpr uint32_t OFFS_CARDPALETTES_START     = 0x9A34Cu;
+    static constexpr uint32_t OFFS_CARDPALETTES_END       = 0xBDC4Cu;
+    static constexpr uint32_t SIZE_ALL_CARDPALETTES_BYTES = OFFS_CARDPALETTES_END - OFFS_CARDPALETTES_START;
+    static constexpr uint32_t CARDPALETTE_READ_SIZEOF     = 128u;
+    static constexpr uint32_t CARDPALETTE_ENTRY_SIZE      = 2u;
+    static constexpr uint32_t CARDPALETTE_NUMENTRIES      = CARDPALETTE_READ_SIZEOF / CARDPALETTE_ENTRY_SIZE;
+
+    // Card graphics
+    // 9x10 of 8x8 tiles stored in a packed 6bpp format. In same order as the cards by their number.
+    static constexpr uint32_t OFFS_CARDGFX_START     = 0x0BDC4Cu;                                       // start of packed 6bpp card graphic tile data
+    static constexpr uint32_t OFFS_CARDGFX_END       = 0x56E00Cu;                                       // end of packed 6bpp card graphic tile data
+    static constexpr uint32_t SIZE_ALL_CARDGFX_BYTES = OFFS_CARDGFX_END - OFFS_CARDGFX_START;           // full size of card gfx area
+    static constexpr uint32_t CARDGFX_TILE_WIDTH_PX  = 8;                                               // width of a single tile, in pixels
+    static constexpr uint32_t CARDGFX_TILE_HEIGHT_PX = 8;                                               // height of a single tile, in pixels
+    static constexpr uint32_t CARDGFX_TILEMAP_WIDTH  = 9;                                               // width of full card graphic, in tiles
+    static constexpr uint32_t CARDGFX_TILEMAP_HEIGHT = 10;                                              // height of full card graphic, in tiles
+    static constexpr uint32_t CARDGFX_FULLWIDTH_PX   = CARDGFX_TILE_WIDTH_PX  * CARDGFX_TILEMAP_WIDTH;  // 9 tiles * 8 px/tile
+    static constexpr uint32_t CARDGFX_FULLHEIGHT_PX  = CARDGFX_TILE_HEIGHT_PX * CARDGFX_TILEMAP_HEIGHT; // 10 tiles * 8 px/tile
+    static constexpr uint32_t CARDGFX_PIXEL_COUNT    = CARDGFX_FULLWIDTH_PX * CARDGFX_FULLHEIGHT_PX;    // 5760 pixels
+    static constexpr uint32_t CARDGFX_BPP            = 6;                                               // 6 bpp
+    static constexpr uint32_t CARDGFX_READ_SIZEOF    = CARDGFX_PIXEL_COUNT * CARDGFX_BPP / 8;           // 4320 bytes stored per graphic, packed at 6bpp
+
     // Start and end of card names super-string
     static constexpr uint32_t OFFS_CARDNAMES     = 0x56E00Cu;
     static constexpr uint32_t OFFS_CARDNAMES_END = 0x58ACDCu;
