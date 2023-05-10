@@ -166,9 +166,9 @@ bool WCTCardPic::WriteToPNG(const char *filename) const
         return false;
     cRel.SetInfoPtr(infoptr);
 
-    // allocate and translate palette
-    const std::unique_ptr<png_color []> upPalette { new png_color [PNG_MAX_PALETTE_LENGTH] };
-    TranslatePalette(upPalette.get(), m_palette);
+    // translate palette
+    static png_color palette[PNG_MAX_PALETTE_LENGTH];
+    TranslatePalette(palette, m_palette);
 
     // setup row pointers
     std::array<png_const_bytep, WCTConstants::CARDGFX_FULLHEIGHT_PX> rowptrs;
@@ -193,7 +193,7 @@ bool WCTCardPic::WriteToPNG(const char *filename) const
         );
         
         // set palette
-        png_set_PLTE(pngptr, infoptr, upPalette.get(), PNG_MAX_PALETTE_LENGTH);
+        png_set_PLTE(pngptr, infoptr, palette, PNG_MAX_PALETTE_LENGTH);
         
         // write header info
         png_write_info(pngptr, infoptr);
