@@ -42,6 +42,9 @@ private:
     png_infop   m_infoptr = nullptr;
 };
 
+//
+// Translate GBA color palette to PNG
+//
 static void TranslatePalette(png_colorp outcolors, const WCTCardPic::palette_t &incolors)
 {
     // clear to zero
@@ -74,8 +77,8 @@ void WCTCardPic::UnpackPixels()
     {
         for(uint32_t tx = 0; tx < WCTConstants::CARDGFX_TILEMAP_WIDTH; tx++)
         {
-            uint8_t *dst = base + ty * tilepitch  + tx * WCTConstants::CARDGFX_TILE_WIDTH_PX;
-            uint32_t count = WCTConstants::CARDGFX_TILE_HEIGHT_PX;
+            uint8_t  *dst   = base + ty * tilepitch + tx * WCTConstants::CARDGFX_TILE_WIDTH_PX;
+            uint32_t  count = WCTConstants::CARDGFX_TILE_HEIGHT_PX;
             do
             {
                 const uint16_t data0 = *src++;

@@ -15,6 +15,8 @@
   along with this program.  If not, see http://www.gnu.org/licenses/
 */
 
+#include <algorithm>
+
 #include "elib/elib.h"
 #include "elib/m_argv.h"
 #include "elib/misc.h"
@@ -607,6 +609,121 @@ static void ViewFusionSummons(const WCTInteractiveData &data)
 }
 
 //
+// While having significant overlap, this is a way to view cards that are Not Good(TM),
+// in their order of badness, and is not related to the "filler" table, which I also refer
+// to as "junk" in the RE project files.
+//
+static void ViewJunkCards(const WCTInteractiveData &data)
+{
+    using namespace WCTConstants;
+
+    const WCTCardData::carddata_t &carddata = data.carddata.GetData();
+
+    struct badcard_t
+    {
+        uint16_t    id;
+        size_t      num;
+        uint32_t    atk;
+        uint32_t    def;
+        uint32_t    lv;
+        uint32_t    sacs;
+        const char *name;
+    };
+    std::vector<badcard_t> badcards;
+
+    for(size_t i = 1; i < carddata.size(); i++)
+    {
+        uint32_t cd = carddata[i];
+
+        // only monsters
+        const CardType ct = GetCardType(cd);
+        if(ct == CardType::Spell || ct == CardType::Trap)
+            continue;
+
+        // only normal monsters
+        const MonsterCardType mtype = GetMonsterType(cd);
+        if(mtype != MonsterCardType::Normal)
+            continue;
+
+        const uint16_t id = data.cardids.IDForCardNum(i);
+
+        // exclude cards with special support or used by key anime characters in some cases
+        static const uint16_t excludeIDs[] {
+            0x142D, 0xFC9, 0x112D, 0x1453, 0xFB8, 0xFB9, 0xFB7, 0xFBA,
+            0xFC8, 0x11CB, 0xFE4, 0x1464, 0x1288, 0xFCF, 0x1375, 0x10BC,
+            0x1297, 0x1123, 0xFAE, 0x1126, 0x1414, 0x127B
+        };
+        if(std::find(std::begin(excludeIDs), std::end(excludeIDs), id) != std::end(excludeIDs))
+            continue;
+
+        // of normal monsters, not fusion materials
+        if(data.fusiondata.IsFusionMaterial(id) == true)
+            continue;
+
+        const uint32_t lv  = GetCardLevel(cd);
+        const uint32_t atk = GetMonsterATK(cd);
+        const uint32_t def = GetMonsterDEF(cd);
+        // ATK/DEF criteria: if Lv7+, yes; if Lv5+, ATK < 2400, DEF != 3000; if Lv4-, ATK < 1500 but not DEF >= 2000
+        if(lv >= 7 || (lv >= 5 && atk < 2400 && def != 3000) || (atk < 1500 && def < 2000))
+        {
+            badcard_t bc;
+            bc.id   = id;
+            bc.num  = i;
+            bc.atk  = atk;
+            bc.def  = def;
+            bc.lv   = lv;
+            bc.name = data.cardnames.GetName(Languages::ENGLISH, i);
+            bc.sacs = lv >= 7 ? 2 : lv >= 5 ? 1 : 0;
+
+            badcards.push_back(bc); // BAD card, BAD!
+        }
+    }
+
+    // sort by badness
+    std::sort(badcards.begin(), badcards.end(), [] (const badcard_t &bc1, const badcard_t &bc2) -> bool {
+        if(bc1.sacs > bc2.sacs)
+        {
+            return true;
+        }
+        else if(bc1.sacs == bc2.sacs)
+        {
+            if(bc1.atk < bc2.atk)
+                return true;
+            else
+                return false;
+        }
+        else
+        {
+            return false;
+        }
+    });
+
+    // view the bad cards
+    euint counter = 0;
+    for(const badcard_t &bc : badcards)
+    {
+        std::printf("\n%u. %04u: %s | ID 0x%04hX (%hu)\n", counter + 1, bc.num, bc.name, bc.id, bc.id);
+        std::printf(
+            "Level %u\n"
+            "ATK %u/DEF %u\n",
+            bc.lv, 
+            bc.atk, bc.def
+        );
+        if(++counter % 10 == 0)
+        {
+            std::puts("Show more bad cards? (Y/N)");
+            std::fflush(stdout);
+            char resp[2];
+            if(const char *const inl = gets_s(resp, sizeof(resp)); inl != nullptr)
+            {
+                if(*inl == 'n' || *inl == 'N')
+                    break; // moo.
+            }
+        }
+    }
+}
+
+//
 // Interactive mode
 //
 static void InteractiveMode(FILE *romfile)
@@ -732,6 +849,9 @@ static void InteractiveMode(FILE *romfile)
                 break;
             case 'f': // view fusion summons
                 ViewFusionSummons(data);
+                break;
+            case 'j': // view junk cards
+                ViewJunkCards(data);
                 break;
             default:
                 ShowCardInfo(data);

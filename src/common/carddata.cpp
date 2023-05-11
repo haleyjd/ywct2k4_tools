@@ -119,4 +119,26 @@ bool WCTFusionData::ReadFusionTables(FILE *f)
     return true;
 }
 
+//
+// Test if a card is fusion material
+//
+bool WCTFusionData::IsFusionMaterial(cardid_t id) const
+{
+    // check two-materials table
+    for(const fusionentry_t &ent : m_fusion2mats)
+    {
+        if(id == ent.material1_id || id == ent.material2_id)
+            return true;
+    }
+
+    // check three-materials table
+    for(const fusionentry_t &ent : m_fusion3mats)
+    {
+        if(id == ent.material1_id || id == ent.material2_id || id == ent.material3_id)
+            return true;
+    }
+
+    return false;
+}
+
 // EOF

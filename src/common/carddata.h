@@ -172,6 +172,9 @@ public:
     const fusiontable_t &GetFusion2Mats() const { return m_fusion2mats; }
     const fusiontable_t &GetFusion3Mats() const { return m_fusion3mats; }
 
+    // Test if a card is fusion material
+    bool IsFusionMaterial(cardid_t id) const;
+
 private:
     fusiontable_t m_fusion2mats;
     fusiontable_t m_fusion3mats;

@@ -34,6 +34,7 @@ bool WCTROMFile::VerifyROM(FILE *f)
     if(len != WCTConstants::EXPECTED_ROM_SIZE)
         return false;
 
+    // verify branch instruction at entry point (offset 0)
     const uint32_t entrypt = GetDataFromOffset<uint32_t>(f, 0).value_or(0u);
     if(WCTCode::isBranchRel24(entrypt) == false ||
        WCTCode::getBranchRel24Dest(entrypt) != WCTConstants::HEADER_ENTRYPT)
@@ -41,7 +42,7 @@ bool WCTROMFile::VerifyROM(FILE *f)
         return false;
     }
 
-    // check signature
+    // check signature in ROM header
     char sig[WCTConstants::HEADER_GAMEID_LEN];
     if(GetCArrayFromOffset(f, WCTConstants::HEADER_GAMEID_OFFS, sig) == false)
         return false;

@@ -88,7 +88,7 @@ void cardgfxtool_main()
         outloc.normalizeSlashes();
         if(hal_platform.makeDirectory(outloc.c_str()) == HAL_FALSE)
         {
-            std::puts("Could not creat output directory\n");
+            std::puts("Could not create output directory\n");
             return;
         }
     }
@@ -131,3 +131,5 @@ void cardgfxtool_main()
         WriteOneCard(romfile, cardnum, numcards, outloc);
     }
 }
+
+// EOF
