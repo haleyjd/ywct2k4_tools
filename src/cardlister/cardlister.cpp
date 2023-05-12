@@ -698,6 +698,11 @@ static void ViewJunkCards(const WCTInteractiveData &data)
         }
     });
 
+    std::printf(
+        "\nBasement-Level Trash Cards Ranking\n"
+        "---------------------------------------------------\n"
+    );
+
     // view the bad cards
     euint counter = 0;
     for(const badcard_t &bc : badcards)
