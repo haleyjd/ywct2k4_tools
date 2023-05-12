@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\common">
+      <UniqueIdentifier>{0c7600a5-10d5-4b76-a09c-17b9f887c643}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\elib">
+      <UniqueIdentifier>{fef88096-851a-4c88-9634-ce7b584dba87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\hal">
+      <UniqueIdentifier>{5cd04dc9-4632-40a9-9e0d-b5c698c94ecd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\win32">
+      <UniqueIdentifier>{bfa31ed2-8261-4e2a-b081-f31bab9d0005}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\elib\elib\atexit.cpp">
+      <Filter>Source Files\elib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\elib\configfile.cpp">
+      <Filter>Source Files\elib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\elib\eassert.cpp">
+      <Filter>Source Files\elib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\elib\m_argv.cpp">
+      <Filter>Source Files\elib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\elib\misc.cpp">
+      <Filter>Source Files\elib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\elib\parser.cpp">
+      <Filter>Source Files\elib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\elib\qstring.cpp">
+      <Filter>Source Files\elib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\elib\zone.cpp">
+      <Filter>Source Files\elib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\hal\hal_init.cpp">
+      <Filter>Source Files\hal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\hal\hal_input.cpp">
+      <Filter>Source Files\hal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\hal\hal_ml.cpp">
+      <Filter>Source Files\hal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\hal\hal_opendir.cpp">
+      <Filter>Source Files\hal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\hal\hal_platform.cpp">
+      <Filter>Source Files\hal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\hal\hal_sfx.cpp">
+      <Filter>Source Files\hal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\hal\hal_timer.cpp">
+      <Filter>Source Files\hal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\hal\hal_video.cpp">
+      <Filter>Source Files\hal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\win32\win32_main.cpp">
+      <Filter>Source Files\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\win32\win32_opendir.cpp">
+      <Filter>Source Files\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\win32\win32_platform.cpp">
+      <Filter>Source Files\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\elib\win32\win32_util.cpp">
+      <Filter>Source Files\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ywctpatcher\ywctpatcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\elib\elib\atexit.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\elib\bdlist.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\elib\binary.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\elib\compare.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\elib\configfile.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\elib\dllist.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\elib\eassert.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\elib\ecnew.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\elib\elib.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\elib\esmartptr.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\elib\m_argv.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\elib\m_ctype.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\elib\misc.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\elib\parser.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\elib\qstring.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\elib\swap.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\elib\zone.h">
+      <Filter>Source Files\elib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\hal\hal_init.h">
+      <Filter>Source Files\hal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\hal\hal_input.h">
+      <Filter>Source Files\hal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\hal\hal_ml.h">
+      <Filter>Source Files\hal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\hal\hal_opendir.h">
+      <Filter>Source Files\hal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\hal\hal_platform.h">
+      <Filter>Source Files\hal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\hal\hal_sfx.h">
+      <Filter>Source Files\hal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\hal\hal_timer.h">
+      <Filter>Source Files\hal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\hal\hal_types.h">
+      <Filter>Source Files\hal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\hal\hal_video.h">
+      <Filter>Source Files\hal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\win32\win32_opendir.h">
+      <Filter>Source Files\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\win32\win32_platform.h">
+      <Filter>Source Files\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\elib\win32\win32_util.h">
+      <Filter>Source Files\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ywctpatcher\econfig.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

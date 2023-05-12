@@ -39,3 +39,6 @@ vc2017/libpng/x64
 vc2017/zlib/Debug
 vc2017/zlib/Release
 vc2017/zlib/x64
+vc2017/ywctpatcher/Debug
+vc2017/ywctpatcher/Release
+vc2017/ywctpatcher/x64
