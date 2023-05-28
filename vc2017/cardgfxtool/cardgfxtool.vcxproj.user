@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>-rom "H:\Code\Decomps\wc2004\Yu-Gi-Oh! World Championship 2004.gba" -out "../../output/pics"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-rom "H:\Code\Decomps\wc2004\Yu-Gi-Oh! World Championship 2004.gba" -generate -in "H:\Code\ywct2k4_tools\output\new" -out "H:\Code\ywct2k4_tools\output\gbapics"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <NXTargetName>Default</NXTargetName>
   </PropertyGroup>

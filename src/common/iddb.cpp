@@ -15,7 +15,6 @@
   along with this program.  If not, see http://www.gnu.org/licenses/
 */
 
-#include <optional>
 
 #include "elib/elib.h"
 #include "elib/misc.h"
@@ -23,55 +22,14 @@
 
 #include "json/json.h"
 
-//
-// Load the file into a string
-//
-static std::optional<qstring> StringFromFile(const char *filename)
-{
-    std::optional<qstring> ret;
-    
-    if(hal_platform.fileExists(filename) == false)
-    {
-        // if the file doesn't exist yet, that's not an error; we'll write it anew
-        ret = "";
-    }
-    else if(const EAutoFile upFile { std::fopen(filename, "rb") }; upFile != nullptr)
-    {
-        const size_t len = static_cast<size_t>(M_FileLength(upFile.get()));
-        if(len != 0) 
-        {
-            // clear-allocate at length+1 for null termination
-            const EUniquePtr<char> upBuf { ecalloc(char, 1, len + 1) };
-            if(std::fread(upBuf.get(), 1, len, upFile.get()) == len)
-                ret = upBuf.get();
-        }
-        else
-            ret = ""; // if file is empty, this is not an error; empty database.
-    }
-    // else, fopen failure
-
-    return ret;
-}
-
-//
-// Parse the JSON string
-//
-static bool ParseJsonFromString(const qstring &str, Json::Value &root, JSONCPP_STRING &errs)
-{
-    const char *const begin = str.c_str();
-    const char *const end   = begin + str.length();
-
-    Json::CharReaderBuilder builder;
-    const std::unique_ptr<Json::CharReader> upReader { builder.newCharReader() };
-    return upReader->parse(begin, end, &root, &errs);
-}
+#include "jsonutils.h"
 
 //
 // Load the database from file
 //
 bool WCTIDDatabase::LoadFromFile(const char *filename)
 {
-    const std::optional<qstring> input { StringFromFile(filename) };
+    const std::optional<qstring> input { WCTJSONUtils::StringFromFile(filename) };
     if(input.has_value() == false)
         return false; // failed to get input for a bad reason
 
@@ -84,7 +42,7 @@ bool WCTIDDatabase::LoadFromFile(const char *filename)
         Json::Value root;
         JSONCPP_STRING errs;
 
-        if(ParseJsonFromString(input.value(), root, errs) == true)
+        if(WCTJSONUtils::ParseJsonFromString(input.value(), root, errs) == true)
         {
             if(root.isObject())
             {

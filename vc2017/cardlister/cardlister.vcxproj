@@ -46,6 +46,7 @@
     <ClCompile Include="..\..\src\common\cardnames.cpp" />
     <ClCompile Include="..\..\src\common\cardtypes.cpp" />
     <ClCompile Include="..\..\src\common\iddb.cpp" />
+    <ClCompile Include="..\..\src\common\jsonutils.cpp" />
     <ClCompile Include="..\..\src\common\numcards.cpp" />
     <ClCompile Include="..\..\src\common\oppdeck.cpp" />
     <ClCompile Include="..\..\src\common\romfile.cpp" />
@@ -89,6 +90,7 @@
     <ClInclude Include="..\..\src\common\colors.h" />
     <ClInclude Include="..\..\src\common\iddb.h" />
     <ClInclude Include="..\..\src\common\instructions.h" />
+    <ClInclude Include="..\..\src\common\jsonutils.h" />
     <ClInclude Include="..\..\src\common\numcards.h" />
     <ClInclude Include="..\..\src\common\oppdeck.h" />
     <ClInclude Include="..\..\src\common\romfile.h" />

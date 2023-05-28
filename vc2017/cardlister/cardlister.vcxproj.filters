@@ -117,6 +117,9 @@
     <ClCompile Include="..\..\src\common\iddb.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\common\jsonutils.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\cardlister\econfig.h">
@@ -243,6 +246,9 @@
       <Filter>Source Files\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\common\colors.h">
+      <Filter>Source Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\jsonutils.h">
       <Filter>Source Files\common</Filter>
     </ClInclude>
   </ItemGroup>

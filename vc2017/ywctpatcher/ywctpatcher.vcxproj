@@ -173,6 +173,9 @@
     <ClCompile Include="..\..\elib\win32\win32_opendir.cpp" />
     <ClCompile Include="..\..\elib\win32\win32_platform.cpp" />
     <ClCompile Include="..\..\elib\win32\win32_util.cpp" />
+    <ClCompile Include="..\..\src\common\jsonutils.cpp" />
+    <ClCompile Include="..\..\src\ywctpatcher\patchscript.cpp" />
+    <ClCompile Include="..\..\src\ywctpatcher\patchtypes.cpp" />
     <ClCompile Include="..\..\src\ywctpatcher\ywctpatcher.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -205,7 +208,10 @@
     <ClInclude Include="..\..\elib\win32\win32_opendir.h" />
     <ClInclude Include="..\..\elib\win32\win32_platform.h" />
     <ClInclude Include="..\..\elib\win32\win32_util.h" />
+    <ClInclude Include="..\..\src\common\jsonutils.h" />
     <ClInclude Include="..\..\src\ywctpatcher\econfig.h" />
+    <ClInclude Include="..\..\src\ywctpatcher\patchscript.h" />
+    <ClInclude Include="..\..\src\ywctpatcher\patchtypes.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
