@@ -36,12 +36,22 @@ public:
     // Write the card graphic out as a PNG
     bool WriteToPNG(const char *filename) const;
 
+    // Read in a PNG file
+    bool ReadFromPNG(const char *filename);
+
+    // Write raw GBA data to a pair of files (.pix and .pal)
+    bool WriteGBAData(const char *basefilename) const;
+
 private:
     rawdata_t m_rawdata;
     palette_t m_palette;
     pixels_t  m_pixels;
 
     void UnpackPixels();
+    void PackPixels();
+
+    bool WritePixels(const char *basefilename) const;
+    bool WritePalette(const char *basefilename) const;
 };
 
 // EOF

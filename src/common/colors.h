@@ -62,6 +62,11 @@ namespace WCTColor
         return gbacolor_t(((color & 0xF8) >> 3) | ((color & 0xF800) >> 6) | ((color & 0xF80000) >> 9));
     }
 
+    // Convert 8-bit separate R/G/B to RGB555
+    static inline constexpr gbacolor_t RGBToRGB555(uint8_t r, uint8_t g, uint8_t b)
+    {
+        return ((r >> 3) | ((g >> 3) << 5) | ((b >> 3) << 10));
+    }
 };
 
 // EOF

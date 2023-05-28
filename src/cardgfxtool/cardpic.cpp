@@ -15,9 +15,12 @@
   along with this program.  If not, see http://www.gnu.org/licenses/
 */
 
+#include <algorithm>
 #include "png.h"
 
 #include "elib/elib.h"
+#include "elib/misc.h"
+#include "elib/qstring.h"
 #include "cardpic.h"
 #include "../common/colors.h"
 #include "../common/romfile.h"
@@ -28,11 +31,20 @@
 class WCTPNGAutoRelease final
 {
 public:
-    WCTPNGAutoRelease(png_structp p) : m_pngptr(p) {}
+    enum class Mode
+    {
+        WRITE,
+        READ
+    };
+
+    explicit WCTPNGAutoRelease(png_structp p, Mode mode = Mode::WRITE) : m_pngptr(p), m_mode(mode) {}
 
     ~WCTPNGAutoRelease()
     {
-        png_destroy_write_struct(&m_pngptr, &m_infoptr);
+        if(m_mode == Mode::READ)
+            png_destroy_read_struct(&m_pngptr, &m_infoptr, nullptr);
+        else
+            png_destroy_write_struct(&m_pngptr, &m_infoptr);
     }
 
     void SetInfoPtr(png_infop info) { m_infoptr = info; }
@@ -40,6 +52,7 @@ public:
 private:
     png_structp m_pngptr  = nullptr;
     png_infop   m_infoptr = nullptr;
+    Mode        m_mode    = Mode::WRITE;
 };
 
 //
@@ -215,6 +228,153 @@ bool WCTCardPic::WriteToPNG(const char *filename) const
 
     // done
     return true;
+}
+
+//
+// Translate PNG color palette to GBA
+//
+static void TranslatePaletteReverse(WCTCardPic::palette_t &outcolors, png_const_colorp incolors, int numcolors)
+{
+    outcolors.fill(0);
+    const size_t len = std::min<>(outcolors.size(), size_t(numcolors));
+    for(size_t i = 0; i < len; i++)
+        outcolors[i] = WCTColor::RGBToRGB555(incolors[i].red, incolors[i].green, incolors[i].blue);
+}
+
+//
+// Pack linear 8-bit image into 6bpp tiled data
+//
+void WCTCardPic::PackPixels()
+{
+    uint16_t             *dst  = reinterpret_cast<uint16_t *>(m_rawdata.data());
+    const uint8_t *const  base = m_pixels.data();
+
+    constexpr uint32_t tilepitch = (WCTConstants::CARDGFX_TILE_HEIGHT_PX * WCTConstants::CARDGFX_FULLWIDTH_PX);
+
+    for(uint32_t ty = 0; ty < WCTConstants::CARDGFX_TILEMAP_HEIGHT; ty++)
+    {
+        for(uint32_t tx = 0; tx < WCTConstants::CARDGFX_TILEMAP_WIDTH; tx++)
+        {
+            const uint8_t *src   = base + ty * tilepitch + tx * WCTConstants::CARDGFX_TILE_WIDTH_PX;
+            uint32_t       count = WCTConstants::CARDGFX_TILE_HEIGHT_PX;
+            do
+            {
+                // pack 8 pixels into 3 words
+                *dst++ =  (src[0] & 63)       | (uint16_t(src[1] & 63) << 6) | (uint16_t(src[2] & 15) << 12);
+                *dst++ = ((src[2] & 48) >> 4) | (uint16_t(src[3] & 63) << 2) | (uint16_t(src[4] & 63) <<  8) | (uint16_t(src[5] & 3) << 14);
+                *dst++ = ((src[5] & 60) >> 2) | (uint16_t(src[6] & 63) << 4) | (uint16_t(src[7] & 63) << 10);
+
+                src += WCTConstants::CARDGFX_FULLWIDTH_PX;
+            }
+            while(--count != 0);
+        }
+    }
+}
+
+//
+// Read in a PNG file
+//
+bool WCTCardPic::ReadFromPNG(const char *filename)
+{
+    // open file for input
+    const EAutoFile upFile { std::fopen(filename, "rb") };
+    if(upFile == nullptr)
+        return false;
+
+    // create read struct
+    png_structp pngptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+    if(pngptr == nullptr)
+        return false;
+    WCTPNGAutoRelease cRel { pngptr, WCTPNGAutoRelease::Mode::READ };
+
+    // allocate/initialize memory for image information
+    png_infop infoptr = png_create_info_struct(pngptr);
+    if(infoptr == nullptr)
+        return false;
+    cRel.SetInfoPtr(infoptr);
+
+    // setup error handling - no C++ objects in this scope!
+    if(setjmp(png_jmpbuf(pngptr)) == 0)
+    {
+        // init input
+        png_init_io(pngptr, upFile.get());
+
+        // read image info without any transforms
+        png_read_png(pngptr, infoptr, PNG_TRANSFORM_IDENTITY, nullptr);
+
+        // format assertions
+        if(png_get_bit_depth(pngptr, infoptr) != 8) // 8bpp only
+            return false;
+        if(png_get_color_type(pngptr, infoptr) != PNG_COLOR_TYPE_PALETTE) // paletted only
+            return false;
+        if(png_get_image_width(pngptr, infoptr) != WCTConstants::CARDGFX_FULLWIDTH_PX) // must be 72px wide
+            return false;
+        if(png_get_image_height(pngptr, infoptr) != WCTConstants::CARDGFX_FULLHEIGHT_PX) // must be 80px tall
+            return false;
+
+        // get palette
+        png_colorp pPalette   = nullptr;
+        int        numPalette = 0;
+        png_get_PLTE(pngptr, infoptr, &pPalette, &numPalette);
+        if(pPalette == nullptr) // expecting valid 8bpp palette (only first 64 indices are used)
+            return false;
+
+        // translate to GBA palette format
+        TranslatePaletteReverse(m_palette, pPalette, numPalette);
+
+        // copy pixels to m_pixels
+        png_bytepp rowptrs = png_get_rows(pngptr, infoptr);
+        for(euint row = 0; row < WCTConstants::CARDGFX_FULLHEIGHT_PX; row++)
+        {
+            uint8_t *const dst = m_pixels.data() + row * WCTConstants::CARDGFX_FULLWIDTH_PX;
+            std::memcpy(dst, rowptrs[row], WCTConstants::CARDGFX_FULLWIDTH_PX);
+        }
+
+        // translate pixels to 6bpp packed tiles
+        PackPixels();
+    }
+    else
+    {
+        return false;
+    }
+
+    // done
+    return true;
+}
+
+//
+// Write out the raw GBA pixel data - 4320 bytes
+//
+bool WCTCardPic::WritePixels(const char *basefilename) const
+{
+    qstring outpath { basefilename };
+    outpath.stripExtension();
+    outpath += ".pix";
+
+    return M_WriteFile(outpath.c_str(), m_rawdata.data(), m_rawdata.size()) != 0;
+}
+
+//
+// Write out the GBA palette - 64 shorts (128 bytes)
+//
+bool WCTCardPic::WritePalette(const char *basefilename) const
+{
+    qstring outpath { basefilename };
+    outpath.stripExtension();
+    outpath += ".pal";
+
+    return M_WriteFile(outpath.c_str(), m_palette.data(), m_palette.size() * sizeof(WCTColor::gbacolor_t)) != 0;
+}
+
+//
+// Write raw GBA data to a pair of files (.pix and .pal)
+//
+bool WCTCardPic::WriteGBAData(const char *basefilename) const
+{
+    bool res;
+    res = WritePixels(basefilename);
+    res = WritePalette(basefilename) && res;
+    return res;
 }
 
 // EOF

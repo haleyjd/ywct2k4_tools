@@ -15,6 +15,8 @@
   along with this program.  If not, see http://www.gnu.org/licenses/
 */
 
+#include <filesystem>
+
 #include "elib/elib.h"
 #include "elib/m_argv.h"
 #include "elib/misc.h"
@@ -50,17 +52,14 @@ static bool WriteOneCard(FILE *romfile, uint32_t cardnum, uint32_t numcards, con
     return thePic.WriteToPNG(outfn.c_str());
 }
 
-// 
-// Main routine
 //
-void cardgfxtool_main()
+// Dump the card pics from the ROM to PNG files
+//
+static void DumpCardPics()
 {
-    // init elib HAL
-    HAL_Init();
-
     const EArgManager &args = EArgManager::GetGlobalArgs();
     const char *const *argv = args.getArgv();
-    const int          argc = args.getArgc();
+
     FILE *romfile = nullptr;
 
     // need ROM file
@@ -129,6 +128,92 @@ void cardgfxtool_main()
     {
         // write a specific card
         WriteOneCard(romfile, cardnum, numcards, outloc);
+    }
+}
+
+//
+// Generate card pics from PNG files
+//
+static void GenerateCardPics()
+{
+    const EArgManager &args = EArgManager::GetGlobalArgs();
+    const char *const *argv = args.getArgv();
+
+    // allow input directory spec
+    qstring inloc { "." };
+    if(const int p = args.getArgParameters("-in", 1); p != 0)
+    {
+        inloc = argv[p];
+        inloc.normalizeSlashes();
+    }
+
+    // allow output directory spec
+    qstring outloc { "." };
+    if(const int p = args.getArgParameters("-out", 1); p != 0)
+    {
+        outloc = argv[p];
+        outloc.normalizeSlashes();
+        if(hal_platform.makeDirectory(outloc.c_str()) == HAL_FALSE)
+        {
+            std::puts("Could not create output directory\n");
+            return;
+        }
+    }
+
+    using namespace std::filesystem;
+
+    std::error_code ec;
+    directory_iterator dir { path { inloc.c_str() }, ec };
+    std::string infn;
+    qstring outfn;
+    for(const directory_entry &entry : dir)
+    {
+        if(entry.is_regular_file() == true)
+        {
+            const path &entpath = entry.path();
+            if(strcasecmp(entpath.extension().string().c_str(), ".png") == 0)
+            {
+                WCTCardPic pic;
+                infn = entpath.filename().string();
+
+                if(pic.ReadFromPNG(entpath.string().c_str()) == true)
+                {
+                    outfn = outloc / infn.c_str();
+                    if(pic.WriteGBAData(outfn.c_str()) == false)
+                        std::printf("Warning: failed to write GBA data for PNG file '%s'\n", infn.c_str());
+                }
+                else
+                {
+                    std::printf("Warning: failed to read PNG file '%s'\n", infn.c_str());
+                }
+            }
+        }
+    }
+}
+
+// 
+// Main routine
+//
+void cardgfxtool_main()
+{
+    // init elib HAL
+    HAL_Init();
+
+    const EArgManager &args = EArgManager::GetGlobalArgs();
+
+    if(args.findArgument("-dump") == true)
+    {
+        // dump mode
+        DumpCardPics();
+    }
+    else if(args.findArgument("-generate") == true)
+    {
+        // generate mode
+        GenerateCardPics();
+    }
+    else
+    {
+        std::puts("Supported modes are -dump or -generate\n");
     }
 }
 
