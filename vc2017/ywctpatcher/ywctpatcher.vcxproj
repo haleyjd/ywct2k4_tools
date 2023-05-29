@@ -209,6 +209,7 @@
     <ClInclude Include="..\..\elib\win32\win32_platform.h" />
     <ClInclude Include="..\..\elib\win32\win32_util.h" />
     <ClInclude Include="..\..\src\common\jsonutils.h" />
+    <ClInclude Include="..\..\src\common\romoffsets.h" />
     <ClInclude Include="..\..\src\ywctpatcher\econfig.h" />
     <ClInclude Include="..\..\src\ywctpatcher\patchscript.h" />
     <ClInclude Include="..\..\src\ywctpatcher\patchtypes.h" />

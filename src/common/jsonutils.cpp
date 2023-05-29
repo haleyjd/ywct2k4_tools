@@ -66,4 +66,29 @@ bool WCTJSONUtils::ParseJsonFromString(const qstring &str, Json::Value &root, JS
     return upReader->parse(begin, end, &root, &errs);
 }
 
+//
+// Convert a JSON value to uint; allows interpretation of strings as numbers
+// via strtoul, which provides hexadecimal support.
+//
+std::optional<uint32_t> WCTJSONUtils::ValueToUint(const Json::Value &value)
+{
+    if(value.isConvertibleTo(Json::ValueType::uintValue))
+        return value.asUInt();
+    else if(value.isConvertibleTo(Json::ValueType::stringValue))
+        return std::strtoul(value.asString().c_str(), nullptr, 0);
+    else
+        return std::nullopt;
+}
+
+//
+// Convert a JSON value to bool while never throwing
+//
+std::optional<bool> WCTJSONUtils::ValueToBool(const Json::Value &value)
+{
+    if(value.isConvertibleTo(Json::ValueType::booleanValue))
+        return value.asBool();
+    else
+        return std::nullopt;
+}
+
 // EOF

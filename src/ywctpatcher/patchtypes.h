@@ -40,6 +40,8 @@ public:
     {
     }
 
+    static WCTROMPatch *New(const Json::Value &jv);
+
     virtual bool Apply() const override;
 
 protected:
@@ -59,6 +61,8 @@ public:
         : m_term(term) , m_replace(replace), m_start(start), m_end(end)
     {
     }
+
+    static WCTROMPatch *New(const Json::Value &jv);
 
     virtual bool Apply() const override;
 
@@ -80,6 +84,8 @@ public:
     {
     }
 
+    static WCTROMPatch *New(const Json::Value &jv);
+
     virtual bool Apply() const override;
 
 protected:
@@ -88,5 +94,17 @@ protected:
     bool     m_allowLonger; // if true, value can be longer than what it is replacing
     uint32_t m_howmuch;     // if longer replacement is allowed, this is how much tolerance exists (usually one or two bytes at most)
 };
+
+//
+// Instantiate ROM patches from JSON objects which describe them
+//
+namespace WCTPatchFactory
+{
+    // Given a JSON object, instantiate the type of patch object it describes. Returns
+    // null if there is any problem doing so. Can also potentially throw JsonCpp exceptions
+    // for exceptionally malformed fields (feeding arrays/objects to simple fields; you're
+    // expected to catch them).
+    WCTROMPatch *New(const Json::Value &jv);
+}
 
 // EOF

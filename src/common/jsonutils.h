@@ -26,6 +26,25 @@ namespace WCTJSONUtils
 
     // Parse the JSON string
     bool ParseJsonFromString(const qstring &str, Json::Value &root, JSONCPP_STRING &errs);
+
+    // Convert a JSON value to uint; allows interpretation of strings as numbers
+    // via strtoul, which provides hexadecimal support.
+    std::optional<uint32_t> ValueToUint(const Json::Value &value);
+
+    // Test if the object contains fields with all the given names
+    template<size_t N>
+    bool HasFields(const Json::Value &value, const char *const (&names)[N])
+    {
+        for(const char *const name : names)
+        {
+            if(value.isMember(name) == false)
+                return false;
+        }
+        return true;
+    }
+
+    // Convert a JSON value to bool while never throwing
+    std::optional<bool> ValueToBool(const Json::Value &value);
 }
 
 // EOF

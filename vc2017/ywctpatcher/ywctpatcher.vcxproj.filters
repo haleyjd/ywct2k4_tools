@@ -200,5 +200,8 @@
     <ClInclude Include="..\..\src\ywctpatcher\patchtypes.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\common\romoffsets.h">
+      <Filter>Source Files\common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
