@@ -99,6 +99,9 @@
     <ClCompile Include="..\..\src\ywctpatcher\patchtypes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\common\carddata.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\elib\elib\atexit.h">
@@ -201,6 +204,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\common\romoffsets.h">
+      <Filter>Source Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\common\carddata.h">
       <Filter>Source Files\common</Filter>
     </ClInclude>
   </ItemGroup>

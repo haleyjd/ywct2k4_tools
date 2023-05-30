@@ -173,6 +173,7 @@
     <ClCompile Include="..\..\elib\win32\win32_opendir.cpp" />
     <ClCompile Include="..\..\elib\win32\win32_platform.cpp" />
     <ClCompile Include="..\..\elib\win32\win32_util.cpp" />
+    <ClCompile Include="..\..\src\common\carddata.cpp" />
     <ClCompile Include="..\..\src\common\jsonutils.cpp" />
     <ClCompile Include="..\..\src\ywctpatcher\patchscript.cpp" />
     <ClCompile Include="..\..\src\ywctpatcher\patchtypes.cpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="..\..\elib\win32\win32_opendir.h" />
     <ClInclude Include="..\..\elib\win32\win32_platform.h" />
     <ClInclude Include="..\..\elib\win32\win32_util.h" />
+    <ClInclude Include="..\..\src\common\carddata.h" />
     <ClInclude Include="..\..\src\common\jsonutils.h" />
     <ClInclude Include="..\..\src\common\romoffsets.h" />
     <ClInclude Include="..\..\src\ywctpatcher\econfig.h" />

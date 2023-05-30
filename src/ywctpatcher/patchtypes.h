@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include "../common/carddata.h"
+
 //
 // Virtual base class for all ROM patches
 //
@@ -93,6 +95,66 @@ protected:
     qstring  m_value;       // value to write there
     bool     m_allowLonger; // if true, value can be longer than what it is replacing
     uint32_t m_howmuch;     // if longer replacement is allowed, this is how much tolerance exists (usually one or two bytes at most)
+};
+
+//
+// Card patch - contains all the information necessary to change one card definition into
+// another.
+//
+class WCTCardPatch : public WCTROMPatch
+{
+public:
+    using Attribute       = WCTConstants::Attribute;
+    using CardType        = WCTConstants::CardType;
+    using SpellTrapType   = WCTConstants::SpellTrapType;
+    using MonsterCardType = WCTConstants::MonsterCardType;
+
+    static WCTROMPatch *New(const Json::Value &jv);
+
+    virtual bool Apply() const override;
+
+    euint            GetNum()      const { return m_num;      }
+    uint16_t         GetID()       const { return m_id;       }
+    const qstring   &GetName()     const { return m_name;     }
+    const qstring   &GetText()     const { return m_text;     }
+    const qstring   &GetPix()      const { return m_pix;      }
+    const qstring   &GetPal()      const { return m_pal;      }
+    Attribute        GetAttr()     const { return m_attr;     }
+    uint8_t          GetLevel()    const { return m_level;    }
+    CardType         GetCardType() const { return m_cardType; }
+    SpellTrapType    GetSTType()   const { return m_sttType;  }
+    MonsterCardType  GetMCType()   const { return m_mcType;   }
+    uint16_t         GetATK()      const { return m_atk;      }
+    uint16_t         GetDEF()      const { return m_def;      }
+
+    void SetNum     (euint           num ) { m_num      = num;  }
+    void SetID      (uint16_t        id  ) { m_id       = id;   }
+    void SetName    (const char     *name) { m_name     = name; }
+    void SetText    (const char     *text) { m_text     = text; }
+    void SetPix     (const char     *pix ) { m_pix      = pix;  }
+    void SetPal     (const char     *pal ) { m_pal      = pal;  }
+    void SetAttr    (Attribute       attr) { m_attr     = attr; }
+    void SetLevel   (uint8_t         lvl ) { m_level    = lvl;  }
+    void SetCardType(CardType        ct  ) { m_cardType = ct;   }
+    void SetSTType  (SpellTrapType   stt ) { m_sttType  = stt;  }
+    void SetMCType  (MonsterCardType mc  ) { m_mcType   = mc;   }
+    void SetATK     (uint16_t        atk ) { m_atk      = atk;  }
+    void SetDEF     (uint16_t        def ) { m_def      = def;  }
+
+protected:
+    euint           m_num      = 0;                       // card number
+    uint16_t        m_id       = 0;                       // card ID
+    qstring         m_name;                               // card name
+    qstring         m_text;                               // card text
+    qstring         m_pix;                                // path to .pix file created by cardgfxtool
+    qstring         m_pal;                                // path to .pal file created by cardgfxtool
+    Attribute       m_attr     = Attribute::Nothing;      // attribute
+    uint8_t         m_level    = 0;                       // level
+    CardType        m_cardType = CardType::Nothing;       // card type
+    SpellTrapType   m_sttType  = SpellTrapType::Normal;   // spell or trap subtype, if card type == 21 or 22
+    MonsterCardType m_mcType   = MonsterCardType::Normal; // monster card subtype, if card type < 21
+    uint16_t        m_atk      = 0;                       // ATK
+    uint16_t        m_def      = 0;                       // DEF
 };
 
 //
